@@ -9,7 +9,7 @@
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
 ![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
 
-[![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/GGdimonGG/NEX-Dashboard/releases)
+[![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
 
 [English](#english) · [Русский](#русский) · [Deutsch](#deutsch)
 
@@ -43,7 +43,7 @@
 
 A customizable Windows PowerShell dashboard with live hardware and network monitoring, 32 color options, custom Fastfetch layouts, Nerd Font icons, gaming and power management, an app launcher, file explorer, system diagnostics, Windows updates and configuration backup.
 
-**Installation:** Download the EasyInstall ZIP from [Releases](https://github.com/GGdimonGG/NEX-Dashboard/releases), extract it and run `Install.cmd`. Follow the setup wizard.
+**Installation:** Download the EasyInstall ZIP from [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases), extract it and run `Install.cmd`. Follow the setup wizard.
 
 Public beta: bugs may occur. Only run installers from a trusted source.
 
@@ -51,7 +51,7 @@ Public beta: bugs may occur. Only run installers from a trusted source.
 
 Настраиваемый Dashboard для Windows PowerShell: мониторинг комплектующих и сети, 32 варианта оформления, стили Fastfetch, иконки Nerd Font, игровой режим, управление электропитанием, запуск приложений, проводник, диагностика, обновления Windows и сохранение конфигураций.
 
-**Установка:** скачайте архив EasyInstall из [Releases](https://github.com/GGdimonGG/NEX-Dashboard/releases), распакуйте его и запустите `Install.cmd`. Следуйте инструкциям мастера.
+**Установка:** скачайте архив EasyInstall из [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases), распакуйте его и запустите `Install.cmd`. Следуйте инструкциям мастера.
 
 Публичная бета-версия: возможны ошибки. Запускайте установщики только из доверенных источников.
 
@@ -59,12 +59,12 @@ Public beta: bugs may occur. Only run installers from a trusted source.
 
 Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerküberwachung, 32 Farboptionen, Fastfetch-Layouts, Nerd-Font-Symbolen, Gaming-Modus, Energiesparplanverwaltung, Anwendungsstarter, Dateimanager, Systemdiagnose, Windows-Updates und Konfigurationssicherung.
 
-**Installation:** EasyInstall-ZIP unter [Releases](https://github.com/GGdimonGG/NEX-Dashboard/releases) herunterladen, entpacken und `Install.cmd` starten. Dem Assistenten folgen.
+**Installation:** EasyInstall-ZIP unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) herunterladen, entpacken und `Install.cmd` starten. Dem Assistenten folgen.
 
 Öffentliche Beta: Fehler sind möglich. Installer nur aus vertrauenswürdigen Quellen ausführen.
 
 ---
 
-[Feedback / Сообщить об ошибке / Fehler melden](https://github.com/GGdimonGG/NEX-Dashboard/issues)
+[Feedback / Сообщить об ошибке / Fehler melden](https://github.com/owoNEXowo/NEX-Dashboard/issues)
 
 Created by **NEX**.
