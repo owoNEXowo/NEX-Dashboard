@@ -39,6 +39,35 @@
 
 </details>
 
+
+<details>
+<summary>Fastfetch styles / Стили Fastfetch / Fastfetch-Designs</summary>
+
+### Cards
+
+![Fastfetch Cards](fastfetch-cards.png)
+
+### System Overview
+
+![Fastfetch System Overview](fastfetch-classic.png)
+
+</details>
+
+<details>
+<summary>Color themes / Цветовые темы / Farbdesigns</summary>
+
+### Mint & Glacier
+
+| Mint | Glacier |
+| :---: | :---: |
+| ![Mint theme](theme-mint.png) | ![Glacier theme](theme-glacier.png) |
+
+### Theme selector
+
+![Built-in color themes](theme-selector.png)
+
+</details>
+
 ## English
 
 A customizable Windows PowerShell dashboard with live hardware and network monitoring, 32 color options, custom Fastfetch layouts, Nerd Font icons, gaming and power management, an app launcher, file explorer, system diagnostics, Windows updates and configuration backup.
