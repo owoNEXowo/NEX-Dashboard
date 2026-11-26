@@ -918,12 +918,14 @@ function global:Show-NexPublicFetch {
         if ((Get-NexLogoWidth ($line -replace '\x1b\[[0-9;]*m','')) -gt $limit) {
             $result=New-Object System.Text.StringBuilder
             $used=0
-            foreach ($part in [regex]::Matches($line,'\x1b\[[0-9;]*m|\P{M}\p{M}*|\p{M}+')) {
-                $token=$part.Value
+            :clip foreach ($token in [regex]::Split($line,'(\x1b\[[0-9;]*m)')) {
                 if ($token -match '^\x1b\[') {$null=$result.Append($token);continue}
-                $cells=Get-NexLogoWidth $token
-                if ($used+$cells -gt $limit) {break}
-                $null=$result.Append($token);$used+=$cells
+                $it=[Globalization.StringInfo]::GetTextElementEnumerator($token)
+                while ($it.MoveNext()) {
+                    $part=$it.GetTextElement();$cells=Get-NexLogoWidth $part
+                    if ($used+$cells -gt $limit) {break clip}
+                    $null=$result.Append($part);$used+=$cells
+                }
             }
             $line=$result.ToString()+$z
         }
@@ -1266,7 +1268,7 @@ function global:Show-NexResponsiveStartupFetch {
     # Only a fresh, interactive built-in fetch can be safely repainted.
     # An alternate buffer keeps normal console history and typed commands untouched.
     $c=$global:NexPublicSettings
-    if ($c.FetchPreset -like 'Fastfetch*' -or -not ($env:WT_SESSION -or $env:WT_PROFILE_ID) -or [Console]::IsInputRedirected -or [Console]::IsOutputRedirected) {Show-NexPublicFetch;return}
+    if ($c.FetchPreset -like 'Fastfetch*' -or $Host.Name -ne 'ConsoleHost' -or [Console]::IsInputRedirected -or [Console]::IsOutputRedirected) {Show-NexPublicFetch;return}
     $snapshot=@{};$e=[char]27;$z="$e[0m";$lastSize='';$entered=$false
     try {
         # Do not consume any key: PSReadLine receives the original input after the preview.
@@ -1283,18 +1285,22 @@ function global:Show-NexResponsiveStartupFetch {
                 if ($lines.Count -gt $room) {$lines=@(Show-NexPublicFetch -Width $w -AsLines -NoAnimation -Snapshot $snapshot -CompactLayout)}
                 if ($lines.Count -gt $room) {$lines=@($lines | Select-Object -First $room)}
                 if ("$([Console]::WindowWidth)x$([Console]::WindowHeight)" -ne $size) {continue}
-                Write-Host "$e[2J$e[H" -NoNewline
+                Write-Host "$e[?25l$e[2J$e[H" -NoNewline
+                $animate=($lastSize -eq '' -and $c.FetchAnimation)
                 foreach ($line in $lines) {
-                    if ([Console]::WindowWidth -ne $w) {break}
+                    if ([Console]::WindowWidth -ne $w -or [Console]::WindowHeight -ne $h -or [Console]::KeyAvailable) {break}
                     Write-Host $line
+                    if ($animate) {Start-Sleep -Milliseconds (@{Fast=7;Normal=18;Slow=40}[[string]$c.AnimationSpeed])}
                 }
                 Write-Host ''
-                foreach ($line in $promptLines) {
-                    if ([Console]::WindowWidth -ne $w) {break}
+                for ($i=0;$i -lt $promptLines.Count;$i++) {
+                    if ([Console]::WindowWidth -ne $w -or [Console]::WindowHeight -ne $h -or [Console]::KeyAvailable) {break}
+                    $line=$promptLines[$i]
                     # A very narrow prompt may be longer than the viewport; use a short preview.
                     if ((Get-NexLogoWidth ($line -replace '\x1b\[[0-9;]*m','')) -ge $w) {$line='PS > '}
-                    Write-Host $line
+                    if ($i -eq $promptLines.Count-1) {Write-Host $line -NoNewline} else {Write-Host $line}
                 }
+                Write-Host "$e[?25h" -NoNewline
                 $lastSize=$size
             }
             Start-Sleep -Milliseconds 100
