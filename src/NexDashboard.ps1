@@ -1300,11 +1300,13 @@ function global:Show-NexResponsiveStartupFetch {
         if ([Console]::CursorLeft -ne 0 -or [Console]::CursorTop -ne [Console]::WindowTop) {Show-NexPublicFetch;return}
         $null=[Console]::KeyAvailable
     } catch {Show-NexPublicFetch;return}
-    $snapshot=@{};$e=[char]27;$z="$e[0m";$lastSize='';$promptRow=0;$finalPrompt='';$drawn=$false
+    $snapshot=@{};$e=[char]27;$z="$e[0m";$lastSize='';$promptRow=0;$finalPrompt='';$drawn=$false;$observedSize='';$observedAt=[Diagnostics.Stopwatch]::StartNew()
     try {
         while ($true) {
             $w=[Console]::WindowWidth;$h=[Console]::WindowHeight;$size="$($w)x$($h)"
             if ($size -ne $lastSize) {
+                if ($size -ne $observedSize) {$observedSize=$size;$observedAt.Restart()}
+                if ($drawn -and $observedAt.ElapsedMilliseconds -lt 80 -and -not [Console]::KeyAvailable) {Start-Sleep -Milliseconds 20;continue}
                 if ($w -lt 12 -or $h -lt 4) {
                     if ([Console]::KeyAvailable) {break}
                     Start-Sleep -Milliseconds 100;continue
@@ -1335,12 +1337,16 @@ function global:Show-NexResponsiveStartupFetch {
                     }
                 }
                 if ("$([Console]::WindowWidth)x$([Console]::WindowHeight)" -ne $size) {continue}
-                $paint=($frame | ForEach-Object {$_+"$z$e[K"}) -join ([Environment]::NewLine)
-                Write-Host "$e[H$paint$e[J$e[?25h" -NoNewline
+                $paint=New-Object System.Text.StringBuilder
+                for ($i=0;$i -lt $frame.Count;$i++) {
+                    $null=$paint.Append("$e[$($i+1);1H$($frame[$i])$z$e[K")
+                }
+                $null=$paint.Append("$e[J$e[?25h")
+                Write-Host $paint.ToString() -NoNewline
                 $promptRow=$frame.Count;$finalPrompt=$preview[-1];$lastSize=$size;$drawn=$true
             }
             if ([Console]::KeyAvailable) {break}
-            Start-Sleep -Milliseconds 100
+            Start-Sleep -Milliseconds 25
         }
         if ($drawn -and $lastSize -eq "$([Console]::WindowWidth)x$([Console]::WindowHeight)") {
             # Host prints the same prompt at the same location without a screen switch.
@@ -1353,11 +1359,47 @@ function global:Show-NexResponsiveStartupFetch {
         if ($drawn) {Write-Host ''} else {Show-NexPublicFetch -NoAnimation -Snapshot $snapshot}
     } finally {Write-Host "$z$e[?25h" -NoNewline}
 }
+function global:Update-NexFetchWhileEditing {
+    if (-not $global:NexStartupRefresh -or $global:NexRefreshBusy) {return}
+    if ($global:NexPublicSettings.FetchPreset -like 'Fastfetch*') {return}
+    try {
+        $global:NexRefreshBusy=$true
+        $inputText='';$cursor=0
+        [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$inputText,[ref]$cursor)
+        # Do not touch multiline editing/completion layouts or scrolled history.
+        if ($inputText -match '[\r\n]' -or [Console]::WindowTop -ne 0) {return}
+        $w=[Console]::WindowWidth;$h=[Console]::WindowHeight
+        if ($w -lt 28 -or $h -lt 8) {return}
+        if ($inputText.Length -gt [Math]::Max(1,$w-16)) {return}
+        $global:NexRefreshRequested=$true
+        # The line editor owns redraw and preserves its current buffer and caret.
+        [Microsoft.PowerShell.PSConsoleReadLine]::InvokePrompt($null,0)
+    } catch {} finally {$global:NexRefreshRequested=$false;$global:NexRefreshBusy=$false}
+}
 function global:Initialize-NexPublic {
     $argsList=[Environment]::GetCommandLineArgs()
     if ($Host.Name -ne 'ConsoleHost' -or [Console]::IsOutputRedirected -or [Console]::IsInputRedirected -or ($argsList -match '^[-/](NonInteractive|File)$') -or (($argsList -match '^[-/]Command$') -and -not ($argsList -match '^[-/]NoExit$'))) {return}
     if (-not $global:NexPublicInitialized) {$global:NexPublicInitialized=$true;$global:NexPublicPending=$true;$global:NexPublicOldPrompt=(Get-Command prompt -ErrorAction SilentlyContinue).ScriptBlock}
     try {if (Get-Command Set-PSReadLineOption -ErrorAction SilentlyContinue) {Set-PSReadLineOption -PredictionSource $global:NexPublicSettings.Prediction -ErrorAction Stop}} catch {}
+    try {
+        if (-not $global:NexFetchRefreshBound -and (Get-Command Set-PSReadLineKeyHandler -ErrorAction SilentlyContinue)) {
+            $existing=@(Get-PSReadLineKeyHandler -Bound | Where-Object Key -eq 'Ctrl+Alt+r')
+            if (-not $existing.Count) {
+                Set-PSReadLineKeyHandler -Chord 'Ctrl+Alt+r' -BriefDescription 'NexRefreshFetch' -LongDescription 'Refresh startup cards without changing the current command' -ScriptBlock {Update-NexFetchWhileEditing}
+                $global:NexFetchRefreshBound=$true
+            }
+        }
+        if (-not $global:NexFetchIdleSubscriber -and $global:NexFetchRefreshBound) {
+            $global:NexFetchIdleSubscriber=Register-EngineEvent -SourceIdentifier PowerShell.OnIdle -Action {
+                if ($global:NexStartupRefresh -and -not $global:NexRefreshBusy) {
+                    try {
+                        $size="$([Console]::WindowWidth)x$([Console]::WindowHeight)"
+                        if ($size -ne $global:NexRefreshSize) {Update-NexFetchWhileEditing}
+                    } catch {}
+                }
+            }
+        }
+    } catch {}
     function global:prompt {
         $ok=$?
         try {
@@ -1370,6 +1412,8 @@ function global:Initialize-NexPublic {
         } catch {}
         $c=$global:NexPublicSettings
         $first=[bool]$global:NexPublicPending
+        $refresh=[bool]$global:NexRefreshRequested
+        if (-not $first -and -not $refresh) {$global:NexStartupRefresh=$false}
         if ($first) {
             $global:NexPublicPending=$false
             if ($c.Startup) {try {Show-NexLoadingScreen} catch {}}
@@ -1383,9 +1427,25 @@ function global:Initialize-NexPublic {
         if ($path -eq $HOME) {$path='~'} elseif ($path.StartsWith($HOME+'\',[StringComparison]::OrdinalIgnoreCase)) {$path='~'+$path.Substring($HOME.Length)}
         $useIcons=[bool]$c.Icons
         $lines=@(Get-NexPromptLines $c.Prompt (Get-NexIdentity) $path $time $ok $duration $useIcons)
+        if ($refresh -and $c.Fetch) {
+            $w=[Console]::WindowWidth;$h=[Console]::WindowHeight
+            $fetch=@(Show-NexPublicFetch -Width $w -AsLines -NoAnimation -Snapshot $global:NexRefreshSnapshot)
+            $room=[Math]::Max(0,$h-$lines.Count-3)
+            if ($fetch.Count -gt $room) {$fetch=@(Show-NexPublicFetch -Width $w -AsLines -NoAnimation -Snapshot $global:NexRefreshSnapshot -CompactLayout)}
+            if ($fetch.Count -gt $room) {$fetch=@($fetch | Select-Object -First $room)}
+            $e=[char]27;$paint=New-Object System.Text.StringBuilder
+            for ($i=0;$i -lt $fetch.Count;$i++) {$null=$paint.Append("$e[$($i+1);1H$($fetch[$i])$e[0m$e[K")}
+            $null=$paint.Append("$e[$($fetch.Count+1);1H$e[J")
+            Write-Host $paint.ToString() -NoNewline
+            $global:NexRefreshSize="$($w)x$($h)"
+        }
         if ($first -and $c.Fetch) {
             $prepared=Show-NexResponsiveStartupFetch -PromptLines $lines
-            if ($null -ne $prepared) {return $prepared.Prompt}
+            if ($null -ne $prepared) {
+                $global:NexStartupRefresh=$true;$global:NexRefreshSnapshot=@{}
+                $global:NexRefreshSize="$([Console]::WindowWidth)x$([Console]::WindowHeight)"
+                return $prepared.Prompt
+            }
         }
         if ($lines.Count -gt 1) {
             Write-Host ''
