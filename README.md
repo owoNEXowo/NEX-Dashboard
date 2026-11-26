@@ -59,7 +59,7 @@
 </details>
 
 <details>
-<summary>Color themes / Цветовые темы / Farbdesigns</summary>
+<summary>Color themes</summary>
 
 ### Mint & Glacier
 
