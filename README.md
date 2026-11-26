@@ -12,7 +12,7 @@
 
 [![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
 
-[English](#english) · [Русский](#русский) · [Deutsch](#deutsch)
+**English** · [Русский](README.ru.md) · [Deutsch](README.de.md)
 
 </div>
 
@@ -21,7 +21,7 @@
 ![Overview](overview.png)
 
 <details>
-<summary>More screenshots / Больше скриншотов / Weitere Screenshots</summary>
+<summary>More screenshots</summary>
 
 ### System Monitor
 ![System Monitor](system-monitor.png)
@@ -42,7 +42,7 @@
 
 
 <details>
-<summary>Fastfetch styles / Стили Fastfetch / Fastfetch-Designs</summary>
+<summary>Fastfetch styles</summary>
 
 ### Cards
 
@@ -73,7 +73,7 @@
 
 </details>
 
-## English
+## About NEX Dashboard
 
 A customizable Windows PowerShell dashboard with live hardware and network monitoring, 32 color options, custom Fastfetch layouts, Nerd Font icons, gaming and power management, an app launcher, file explorer, system diagnostics, Windows updates and configuration backup.
 
@@ -81,24 +81,8 @@ A customizable Windows PowerShell dashboard with live hardware and network monit
 
 Public beta: bugs may occur. Only run installers from a trusted source.
 
-## Русский
-
-Настраиваемый Dashboard для Windows PowerShell: мониторинг комплектующих и сети, 32 варианта оформления, стили Fastfetch, иконки Nerd Font, игровой режим, управление электропитанием, запуск приложений, проводник, диагностика, обновления Windows и сохранение конфигураций.
-
-**Установка:** скачайте архив EasyInstall из [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases), распакуйте его и запустите `Install.cmd`. Следуйте инструкциям мастера.
-
-Публичная бета-версия: возможны ошибки. Запускайте установщики только из доверенных источников.
-
-## Deutsch
-
-Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerküberwachung, 32 Farboptionen, Fastfetch-Layouts, Nerd-Font-Symbolen, Gaming-Modus, Energiesparplanverwaltung, Anwendungsstarter, Dateimanager, Systemdiagnose, Windows-Updates und Konfigurationssicherung.
-
-**Installation:** EasyInstall-ZIP unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) herunterladen, entpacken und `Install.cmd` starten. Dem Assistenten folgen.
-
-Öffentliche Beta: Fehler sind möglich. Installer nur aus vertrauenswürdigen Quellen ausführen.
-
 ---
 
-[Feedback / Сообщить об ошибке / Fehler melden](https://github.com/owoNEXowo/NEX-Dashboard/issues)
+[Feedback](https://github.com/owoNEXowo/NEX-Dashboard/issues)
 
 Created by **NEX**.
