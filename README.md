@@ -108,3 +108,7 @@ Public beta: bugs may occur. Only run installers from a trusted source.
 [Feedback](https://github.com/owoNEXowo/NEX-Dashboard/issues)
 
 Created by **NEX**.
+
+## Source code
+
+[PowerShell source](src/NexDashboard.ps1) · [Repository installer](installer/Install.cmd) · [Changelog](CHANGELOG.md). Ready-to-use builds remain in [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases). No open-source license has been granted yet.

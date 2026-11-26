@@ -108,3 +108,7 @@ Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerkübe
 [Fehler melden](https://github.com/owoNEXowo/NEX-Dashboard/issues)
 
 Erstellt von **NEX**.
+
+## Quellcode
+
+[PowerShell-Quellcode](src/NexDashboard.ps1) · [Repository-Installer](installer/Install.cmd) · [Versionshistorie](CHANGELOG.md). Fertige Pakete sind unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) verfügbar. Eine Open-Source-Lizenz wurde noch nicht erteilt.

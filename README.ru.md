@@ -108,3 +108,7 @@
 [Сообщить об ошибке](https://github.com/owoNEXowo/NEX-Dashboard/issues)
 
 Создатель **NEX**.
+
+## Исходный код
+
+[Скрипт PowerShell](src/NexDashboard.ps1) · [Установщик репозитория](installer/Install.cmd) · [История версий](CHANGELOG.md). Готовые сборки находятся в [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases). Открытая лицензия пока не предоставлена.
