@@ -52,7 +52,7 @@
 
 ![Fastfetch System Overview](fastfetch-classic.png)
 
-### Preset selector
+### Layout-Auswahl
 
 ![Fetch preset selector](fetch-presets.png)
 
@@ -77,7 +77,18 @@
 
 Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerküberwachung, 32 Farboptionen, Fastfetch-Layouts, Nerd-Font-Symbolen, Gaming-Modus, Energiesparplanverwaltung, Anwendungsstarter, Dateimanager, Systemdiagnose, Windows-Updates und Konfigurationssicherung.
 
+## Neue Funktionen in 2.6.0
+
+- **Dashboard-Designer:** Monitorkarten neu anordnen oder ausblenden, zwischen einer und zwei Spalten wählen und das Layout in der Vorschau ansehen.
+- **Autostart-Manager:** Autostart-Programme und ihre Befehle anzeigen sowie die Windows-Autostart-Einstellungen öffnen.
+- **Globale Suche:** mit `Ctrl+K` Dashboard-Bereiche und wichtige Aktionen finden.
+- **Plugin-Manager:** integrierte Widgets für Akkustand, Sitzungsdauer und Schnellzugriffe aktivieren. Externe Skripte werden nicht ausgeführt.
+- **Animationsstudio:** fünf Ladeanimationen, einstellbare Geschwindigkeit und Vorschau.
+- **Einstellungshilfen:** optionale Erläuterungen und Hilfe über `F1`.
+
 **Installation:** EasyInstall-ZIP unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) herunterladen, entpacken und `Install.cmd` starten. Dem Assistenten folgen.
+
+**Updates:** ab Version 2.5.0 können kompatible veröffentlichte Releases über das Update-Center gesucht und installiert werden. Lokale `.ps1`-Updates bleiben möglich.
 
 Öffentliche Beta: Fehler sind möglich. Installer nur aus vertrauenswürdigen Quellen ausführen.
 
