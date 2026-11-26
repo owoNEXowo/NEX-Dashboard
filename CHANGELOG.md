@@ -3,6 +3,8 @@
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
 ## 2.6.2 (unreleased)
+- Avoid switching screen buffers on first startup keystroke; repaint the fresh viewport in place.
+- Clarify active TCP connection counts and add a shortcut to Windows Resource Monitor for per-process network rates.
 - Fit built-in fetch cards to the terminal width and repaint the startup preview on resize until the first keyboard input in interactive Windows consoles. Add layout width regression tests.
 - Reorder sidebar by purpose, with optional group separators saved in preferences and portable backups.
 - Adaptive information labels and grouped personalization settings.
