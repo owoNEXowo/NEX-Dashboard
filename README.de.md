@@ -111,4 +111,4 @@ Erstellt von **NEX**.
 
 ## Quellcode
 
-[PowerShell-Quellcode](src/NexDashboard.ps1) · [Repository-Installer](installer/Install.cmd) · [Versionshistorie](CHANGELOG.md). Fertige Pakete sind unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) verfügbar. Eine Open-Source-Lizenz wurde noch nicht erteilt.
+[PowerShell-Quellcode](src/NexDashboard.ps1) · [Repository-Installer](installer/Install.cmd) · [Versionshistorie](CHANGELOG.md). Fertige Pakete sind unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) verfügbar. Der NEX Dashboard-Quellcode steht unter der [MIT-Lizenz](LICENSE). Für Drittsoftware, Schriftarten und Logos gelten weiterhin ihre jeweiligen Lizenzen.

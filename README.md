@@ -111,4 +111,4 @@ Created by **NEX**.
 
 ## Source code
 
-[PowerShell source](src/NexDashboard.ps1) · [Repository installer](installer/Install.cmd) · [Changelog](CHANGELOG.md). Ready-to-use builds remain in [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases). No open-source license has been granted yet.
+[PowerShell source](src/NexDashboard.ps1) · [Repository installer](installer/Install.cmd) · [Changelog](CHANGELOG.md). Ready-to-use builds remain in [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases). The NEX Dashboard source code is licensed under the [MIT License](LICENSE). Third-party software, fonts and logos remain under their respective licenses; they are not relicensed here.

@@ -111,4 +111,4 @@
 
 ## Исходный код
 
-[Скрипт PowerShell](src/NexDashboard.ps1) · [Установщик репозитория](installer/Install.cmd) · [История версий](CHANGELOG.md). Готовые сборки находятся в [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases). Открытая лицензия пока не предоставлена.
+[Скрипт PowerShell](src/NexDashboard.ps1) · [Установщик репозитория](installer/Install.cmd) · [История версий](CHANGELOG.md). Готовые сборки находятся в [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases). Исходный код NEX Dashboard распространяется по [лицензии MIT](LICENSE). Сторонние программы, шрифты и логотипы сохраняют собственные лицензии.
