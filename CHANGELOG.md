@@ -3,6 +3,7 @@
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
 ## 2.6.2 (unreleased)
+- Fit built-in fetch cards to the terminal width and repaint the startup preview on resize until the first keyboard input in Windows Terminal.
 - Reorder sidebar by purpose, with optional group separators saved in preferences and portable backups.
 - Adaptive information labels and grouped personalization settings.
 - Detect local Ethernet/Wi-Fi/mobile adapters automatically; distinguish Windows Update restart status from servicing markers.

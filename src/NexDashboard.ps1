@@ -906,12 +906,30 @@ function global:Get-NexCustomFetchConfig {
 }
 
 function global:Show-NexPublicFetch {
+    param([int]$Width=0,[switch]$AsLines,[switch]$NoAnimation,[hashtable]$Snapshot,[switch]$CompactLayout)
+    if ($Width -le 0) { $Width=[Console]::WindowWidth }
+    $Width=[Math]::Max(1,$Width)
     $p=Get-NexPalette;$a=NexAnsi $p[0];$b=NexAnsi $p[1];$z="$([char]27)[0m";$white=NexAnsi $p[4];$muted=NexAnsi $p[5]
-    $c=$global:NexPublicSettings;$mode=$c.FetchPreset
+    $c=$global:NexPublicSettings;$mode=if ($CompactLayout) {'Compact'} else {$c.FetchPreset}
     # Reveal only after output is collected; no extra native process or fake loading.
     function FetchEmit([string]$line) {
+        # Leave one cell unused so Windows Terminal never autowraps a complete frame.
+        $limit=[Math]::Max(0,$Width-1)
+        if ((Get-NexLogoWidth ($line -replace '\x1b\[[0-9;]*m','')) -gt $limit) {
+            $result=New-Object System.Text.StringBuilder
+            $used=0
+            foreach ($part in [regex]::Matches($line,'\x1b\[[0-9;]*m|\P{M}\p{M}*|\p{M}+')) {
+                $token=$part.Value
+                if ($token -match '^\x1b\[') {$null=$result.Append($token);continue}
+                $cells=Get-NexLogoWidth $token
+                if ($used+$cells -gt $limit) {break}
+                $null=$result.Append($token);$used+=$cells
+            }
+            $line=$result.ToString()+$z
+        }
+        if ($AsLines) {return $line}
         Write-Host $line
-        if ($c.FetchAnimation -and -not [Console]::IsOutputRedirected) {Start-Sleep -Milliseconds (@{Fast=7;Normal=18;Slow=40}[[string]$c.AnimationSpeed])}
+        if (-not $NoAnimation -and $c.FetchAnimation -and -not [Console]::IsOutputRedirected) {Start-Sleep -Milliseconds (@{Fast=7;Normal=18;Slow=40}[[string]$c.AnimationSpeed])}
     }
     if ($mode -like 'Fastfetch*') {
         $ff=Get-NexFastfetch
@@ -980,9 +998,16 @@ function global:Show-NexPublicFetch {
     }
     # Built-in presets do not require Fastfetch, internet or a specific GPU.
     try {
-        $os=Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
-        $cpu=Get-CimInstance Win32_Processor -ErrorAction Stop | Select-Object -First 1
-        $gpu=@(Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | ForEach-Object {$_.Name})
+        if ($null -ne $Snapshot -and $Snapshot.ContainsKey('OS')) {
+            $os=$Snapshot.OS;$cpu=$Snapshot.CPU;$gpu=@($Snapshot.GPU);$disks=@($Snapshot.Disks);$cv=$Snapshot.CV
+        } else {
+            $os=Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
+            $cpu=Get-CimInstance Win32_Processor -ErrorAction Stop | Select-Object -First 1
+            $gpu=@(Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | ForEach-Object {$_.Name})
+            $disks=@(Get-CimInstance Win32_LogicalDisk -Filter 'DriveType=3' -ErrorAction SilentlyContinue | Select-Object -First 4)
+            $cv=Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue
+            if ($null -ne $Snapshot) {$Snapshot.OS=$os;$Snapshot.CPU=$cpu;$Snapshot.GPU=$gpu;$Snapshot.Disks=$disks;$Snapshot.CV=$cv}
+        }
         $memTotal=[double]$os.TotalVisibleMemorySize
         $memUsed=$memTotal-[double]$os.FreePhysicalMemory
         $mem='{0:0.0} / {1:0.0} GiB' -f ($memUsed/1MB),($memTotal/1MB)
@@ -997,8 +1022,16 @@ function global:Show-NexPublicFetch {
         function FetchFit([string]$v,[int]$width) {
             $v=FetchClean $v
             if ($width -le 0) {return ''}
-            if ($v.Length -gt $width) {return ($v.Substring(0,$width-1)+'…')}
-            return $v.PadRight($width)
+            $cells=Get-NexLogoWidth $v
+            if ($cells -le $width) {return ($v+(' '*($width-$cells)))}
+            $result=New-Object System.Text.StringBuilder
+            $used=0;$it=[Globalization.StringInfo]::GetTextElementEnumerator($v)
+            while ($it.MoveNext()) {
+                $part=$it.GetTextElement();$n=Get-NexLogoWidth $part
+                if ($used+$n -gt $width-1) {break}
+                $null=$result.Append($part);$used+=$n
+            }
+            return ($result.ToString()+'…'+(' '*[Math]::Max(0,$width-$used-1)))
         }
         function FetchRow([int]$icon,[string]$fallback,[string]$label,[string]$value) {
             return @{Icon=(FetchIcon $icon $fallback);Label=(NexL $label);Value=(FetchClean $value)}
@@ -1024,13 +1057,12 @@ function global:Show-NexPublicFetch {
         foreach ($gpuName in @($gpu)) {$hardware+=FetchRow 0xF108 'G' 'Graphics' $gpuName}
         if (-not $gpu.Count) {$hardware+=FetchRow 0xF108 'G' 'Graphics' (NexL 'Not detected')}
         $hardware+=FetchRow 0xEFC5 'M' 'Memory' $mem
-        foreach ($disk in @(Get-CimInstance Win32_LogicalDisk -Filter 'DriveType=3' -ErrorAction SilentlyContinue | Select-Object -First 4)) {
+        foreach ($disk in $disks) {
             if ($disk.Size -gt 0) {
                 $pct=100*(1-$disk.FreeSpace/$disk.Size)
                 $hardware+=FetchRow 0xF0A0 'D' ($disk.DeviceID) ('{0:0.0} / {1:0.0} GiB ({2:0}%)' -f (($disk.Size-$disk.FreeSpace)/1GB),($disk.Size/1GB),$pct)
             }
         }
-        $cv=Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue
         $build=[string]$os.BuildNumber
         if ($null -ne $cv.UBR) {$build+='.'+$cv.UBR}
         $terminalName=if ($env:WT_SESSION -or $env:WT_PROFILE_ID) {'Windows Terminal'} elseif ($env:TERM_PROGRAM) {$env:TERM_PROGRAM} else {'ConsoleHost'}
@@ -1046,7 +1078,7 @@ function global:Show-NexPublicFetch {
         FetchEmit "$a$title$z"
         $customLogoLines=@()
         if ($c.CustomLogo) {$customLogoLines=@($c.CustomLogo -split "`n")}
-        if ($customLogoLines.Count -and $mode -in @('Minimal','Compact')) {
+        if ($customLogoLines.Count -and $mode -in @('Minimal','Compact') -and -not $CompactLayout) {
             foreach ($artLine in $customLogoLines) {FetchEmit ($a+$artLine+$z)}
             FetchEmit ''
         }
@@ -1059,7 +1091,11 @@ function global:Show-NexPublicFetch {
             }
             return
         }
-        $window=[Math]::Max(24,[Console]::WindowWidth)
+        $window=$Width
+        if ($window -lt 28) {
+            foreach ($row in ($hardware+$software+$system)) {FetchEmit "$a$($row.Label): $white$($row.Value)$z"}
+            return
+        }
         $logoPane=if ($window -ge 112) {10} else {7}
         $logoWidth=2*$logoPane+3;$withLogo=$window -ge 80
         if ($customLogoLines.Count) {
@@ -1082,7 +1118,8 @@ function global:Show-NexPublicFetch {
             "$color╭$('─'*$left)$titleText$('─'*$right)╮$z"
             foreach ($entry in $entries) {
                 $key=FetchFit $entry.Label $labelWidth
-                $value=FetchFit $entry.Value ($inner-$labelWidth-5)
+                $iconWidth=Get-NexLogoWidth $entry.Icon
+                $value=FetchFit $entry.Value ($inner-$labelWidth-4-$iconWidth)
                 "$color│$z $(FetchTone $entry.Label $entry.Value)$($entry.Icon) $key$z $(FetchValueTone $entry)$value$z $color│$z"
             }
             "$color╰$('─'*$inner)╯$z"
@@ -1225,10 +1262,50 @@ function global:Show-NexLoadingScreen {
         else {Write-Host "$z$e[?25h" -NoNewline;Clear-Host}
     }
 }
+function global:Show-NexResponsiveStartupFetch {
+    # Only a fresh, interactive built-in fetch can be safely repainted.
+    # An alternate buffer keeps normal console history and typed commands untouched.
+    $c=$global:NexPublicSettings
+    if ($c.FetchPreset -like 'Fastfetch*' -or -not ($env:WT_SESSION -or $env:WT_PROFILE_ID) -or [Console]::IsInputRedirected -or [Console]::IsOutputRedirected) {Show-NexPublicFetch;return}
+    $snapshot=@{};$e=[char]27;$z="$e[0m";$lastSize='';$entered=$false
+    try {
+        # Do not consume any key: PSReadLine receives the original input after the preview.
+        if ([Console]::KeyAvailable) {Show-NexPublicFetch;return}
+        Write-Host "$e[?1049h$e[?25l" -NoNewline;$entered=$true
+        while (-not [Console]::KeyAvailable) {
+            $w=[Console]::WindowWidth;$h=[Console]::WindowHeight;$size="${w}x${h}"
+            if ($size -ne $lastSize) {
+                $lines=@(Show-NexPublicFetch -Width $w -AsLines -NoAnimation -Snapshot $snapshot)
+                $path=(Get-Location).Path
+                if ($path -eq $HOME) {$path='~'} elseif ($HOME -and $path.StartsWith($HOME+'\',[StringComparison]::OrdinalIgnoreCase)) {$path='~'+$path.Substring($HOME.Length)}
+                $promptLines=if ($c.Prompt -eq 'Keep existing') {@('PS '+$path+'> ')} else {@(Get-NexPromptLines $c.Prompt (Get-NexIdentity) $path (Get-Date -Format 'HH:mm:ss') $true '' ([bool]$c.Icons))}
+                $room=[Math]::Max(0,$h-$promptLines.Count-2)
+                if ($lines.Count -gt $room) {$lines=@(Show-NexPublicFetch -Width $w -AsLines -NoAnimation -Snapshot $snapshot -CompactLayout)}
+                if ($lines.Count -gt $room) {$lines=@($lines | Select-Object -First $room)}
+                if ("$([Console]::WindowWidth)x$([Console]::WindowHeight)" -ne $size) {continue}
+                Write-Host "$e[2J$e[H" -NoNewline
+                foreach ($line in $lines) {
+                    if ([Console]::WindowWidth -ne $w) {break}
+                    Write-Host $line
+                }
+                Write-Host ''
+                foreach ($line in $promptLines) {
+                    if ([Console]::WindowWidth -ne $w) {break}
+                    # A very narrow prompt may be longer than the viewport; use a short preview.
+                    if ((Get-NexLogoWidth ($line -replace '\x1b\[[0-9;]*m','')) -ge $w) {$line='PS > '}
+                    Write-Host $line
+                }
+                $lastSize=$size
+            }
+            Start-Sleep -Milliseconds 100
+        }
+    } catch {} finally {if ($entered) {Write-Host "$z$e[?1049l$e[?25h" -NoNewline}}
+    Show-NexPublicFetch -NoAnimation -Snapshot $snapshot
+}
 function global:Show-NexPublicStartup {
     $c=$global:NexPublicSettings
     if ($c.Startup) {Show-NexLoadingScreen}
-    if ($c.Fetch) {Show-NexPublicFetch}
+    if ($c.Fetch) {Show-NexResponsiveStartupFetch}
 }
 function global:Initialize-NexPublic {
     $argsList=[Environment]::GetCommandLineArgs()
