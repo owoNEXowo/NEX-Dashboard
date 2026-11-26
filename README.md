@@ -8,6 +8,7 @@
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
 ![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
+![Downloads](https://img.shields.io/github/downloads/owoNEXowo/NEX-Dashboard/total?style=for-the-badge&color=94E2D5&label=Downloads)
 
 [![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
 
