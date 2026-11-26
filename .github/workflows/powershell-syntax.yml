@@ -1,0 +1,46 @@
+name: PowerShell syntax
+'on':
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  syntax:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE 'src/NexDashboard.ps1'
+          $bytes = [IO.File]::ReadAllBytes($path)
+          if ($bytes.Length -lt 3 -or $bytes[0] -ne 239 -or $bytes[1] -ne 187 -or $bytes[2] -ne 191) { throw 'UTF-8 BOM missing' }
+          $tokens = $null
+          $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -gt 0) { $errors | Out-String | Write-Host; throw 'PowerShell syntax validation failed' }
+          Write-Host 'Syntax validation passed.'
+      - name: Validate PowerShell 7
+        shell: pwsh
+        run: |
+          $path = Join-Path $env:GITHUB_WORKSPACE 'src/NexDashboard.ps1'
+          $bytes = [IO.File]::ReadAllBytes($path)
+          if ($bytes.Length -lt 3 -or $bytes[0] -ne 239 -or $bytes[1] -ne 187 -or $bytes[2] -ne 191) { throw 'UTF-8 BOM missing' }
+          $tokens = $null
+          $errors = $null
+          $null = [System.Management.Automation.Language.Parser]::ParseFile($path, [ref]$tokens, [ref]$errors)
+          if ($errors.Count -gt 0) { $errors | Out-String | Write-Host; throw 'PowerShell syntax validation failed' }
+          Write-Host 'Syntax validation passed.'
+      - name: Test responsive fetch layouts (5.1)
+        shell: powershell
+        run: ./tests/fetch-layout.ps1
+      - name: Test responsive fetch layouts (7)
+        shell: pwsh
+        run: ./tests/fetch-layout.ps1
+      - name: Test Ookla consent persistence (5.1)
+        shell: powershell
+        run: ./tests/ookla-consent.ps1
+      - name: Test Ookla consent persistence (7)
+        shell: pwsh
+        run: ./tests/ookla-consent.ps1

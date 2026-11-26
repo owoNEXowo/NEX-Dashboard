@@ -7,7 +7,7 @@
 ![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
-![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
+![License: MIT](https://img.shields.io/badge/License-MIT-A6E3A1?style=for-the-badge)
 ![Downloads](https://img.shields.io/github/downloads/owoNEXowo/NEX-Dashboard/total?style=for-the-badge&color=94E2D5&label=Downloads)
 
 [![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
@@ -19,6 +19,8 @@
 ## Предпросмотр
 
 ![Overview](overview.png)
+
+*Скриншоты предыдущих версий; текущий интерфейс может отличаться.*
 
 <details>
 <summary>Dashboard 2.6.0</summary>
@@ -88,6 +90,17 @@
 
 Настраиваемый Dashboard для Windows PowerShell: мониторинг комплектующих и сети, 32 варианта оформления, стили Fastfetch, иконки Nerd Font, игровой режим, управление электропитанием, запуск приложений, проводник, диагностика, обновления Windows и сохранение конфигураций.
 
+## Что нового в 2.6.2
+
+- Упорядоченное боковое меню с отключаемыми разделителями и группы персонализации.
+- Адаптивные подписи и улучшенное изменение размеров стартовых карточек в поддерживаемых терминалах.
+- Мониторинг CPU, RAM и GPU по процессам и кнопка открытия монитора ресурсов Windows.
+- Автоматическое определение локального сетевого адаптера и сохранение согласия Ookla при обновлении Dashboard.
+- Раздельные индикаторы перезапуска Windows Update и системного обслуживания.
+- Автоматические тесты синтаксиса, ширины карточек и сохранения согласия в PowerShell 5.1 и 7.
+
+Перерисовка стартовых карточек зависит от терминала и версии PSReadLine; длинные и многострочные команды не перерисовываются. Скорость диска и сети по процессам не предусмотрена.
+
 ## Новые возможности 2.6.0
 
 - **Дизайнер Dashboard:** меняйте порядок карточек монитора, скрывайте ненужные, выбирайте одну или две колонки и просматривайте результат.
@@ -101,7 +114,7 @@
 
 **Обновления:** начиная с версии 2.5.0 используйте центр обновлений для проверки и установки совместимых опубликованных релизов. Установка из локального `.ps1` также поддерживается.
 
-Публичная бета-версия: возможны ошибки. Запускайте установщики только из доверенных источников.
+Публичный релиз: совместимость зависит от ПК и терминала. Запускайте установщики только из доверенных источников.
 
 ---
 
