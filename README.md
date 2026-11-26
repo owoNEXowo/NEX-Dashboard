@@ -51,6 +51,10 @@
 
 ![Fastfetch System Overview](fastfetch-classic.png)
 
+### Preset selector
+
+![Fetch preset selector](fetch-presets.png)
+
 </details>
 
 <details>
