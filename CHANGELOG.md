@@ -2,21 +2,18 @@
 
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
-## 2.6.2 (unreleased)
-- Simplify Processes to CPU, RAM and GPU; remove general I/O and TCP counts and their background queries. Keep Windows Resource Monitor shortcut and dedicated Network page.
-- Rework first-prompt fetch resize using PSReadLine timer events while retaining the input buffer; stop on command acceptance.
-- Debounce startup viewport changes and repaint positioned rows in one write. Add a first-prompt PSReadLine refresh shortcut (Ctrl+Alt+R) and idle refresh where supported, without replacing the input buffer.
-- Persist explicit Ookla terms and privacy acceptance locally across Dashboard restarts and upgrades; request consent again for a changed CLI binary or terms revision. Add a reset option.
-- Avoid switching screen buffers on first startup keystroke; repaint the fresh viewport in place.
-- Clarify active TCP connection counts and add a shortcut to Windows Resource Monitor for per-process network rates.
-- Fit built-in fetch cards to the terminal width and repaint the startup preview on resize until the first keyboard input in interactive Windows consoles. Add layout width regression tests.
-- Reorder sidebar by purpose, with optional group separators saved in preferences and portable backups.
-- Adaptive information labels and grouped personalization settings.
-- Detect local Ethernet/Wi-Fi/mobile adapters automatically; distinguish Windows Update restart status from servicing markers.
-- Process GPU engine load, general I/O throughput and established TCP connection counts (where available).
-- Prefer a stable release when stable and prerelease versions have the same number.
-- Keep native powercfg diagnostics out of the result stream and check its exit code.
-- Add Windows PowerShell 5.1 and PowerShell 7 parser checks.
+## 2.6.2 — 2026-11-26
+
+- Reorganized sidebar with optional group separators and grouped personalization settings.
+- Adaptive information labels and improved startup card resizing for supported consoles.
+- Live CPU, RAM and GPU process metrics, plus a Windows Resource Monitor shortcut.
+- Automatic detection of local network adapter type; Ookla consent is remembered across Dashboard updates.
+- Separate Windows Update and servicing restart indicators.
+- Automated PowerShell 5.1 and 7 syntax, fetch layout and consent persistence tests.
+
+The startup resize behavior depends on the console and PSReadLine version; long or multiline edits are not repainted. Per-process disk and network throughput are not included.
+
+- Prefer regular releases over prereleases with the same version; improve native powercfg diagnostics handling.
 
 ## 2.6.1
 - Optional Ookla Speedtest CLI installation and SHA-256 verification.

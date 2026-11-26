@@ -7,7 +7,7 @@
 ![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
-![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
+![License: MIT](https://img.shields.io/badge/License-MIT-A6E3A1?style=for-the-badge)
 ![Downloads](https://img.shields.io/github/downloads/owoNEXowo/NEX-Dashboard/total?style=for-the-badge&color=94E2D5&label=Downloads)
 
 [![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
@@ -19,6 +19,8 @@
 ## Preview
 
 ![Overview](overview.png)
+
+*Earlier-version screenshots; current appearance may differ.*
 
 <details>
 <summary>Dashboard 2.6.0</summary>
@@ -88,6 +90,17 @@
 
 A customizable Windows PowerShell dashboard with live hardware and network monitoring, 32 color options, custom Fastfetch layouts, Nerd Font icons, gaming and power management, an app launcher, file explorer, system diagnostics, Windows updates and configuration backup.
 
+## What's new in 2.6.2
+
+- Reorganized sidebar with optional group separators and grouped personalization settings.
+- Adaptive information labels and improved startup card resizing for supported consoles.
+- Live CPU, RAM and GPU process metrics, plus a Windows Resource Monitor shortcut.
+- Automatic detection of local network adapter type; Ookla consent is remembered across Dashboard updates.
+- Separate Windows Update and servicing restart indicators.
+- Automated PowerShell 5.1 and 7 syntax, fetch layout and consent persistence tests.
+
+The startup resize behavior depends on the console and PSReadLine version; long or multiline edits are not repainted. Per-process disk and network throughput are not included.
+
 ## Features added in 2.6.0
 
 - **Dashboard Designer:** reorder or hide monitor cards, choose one or two columns, and preview the layout.
@@ -101,7 +114,7 @@ A customizable Windows PowerShell dashboard with live hardware and network monit
 
 **Updates:** from version 2.5.0 onward, use Update Center to check for and install compatible published releases. Local `.ps1` updates are still supported.
 
-Public beta: bugs may occur. Only run installers from a trusted source.
+Public release: compatibility may vary by PC and terminal. Only run installers from a trusted source.
 
 ---
 

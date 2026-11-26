@@ -7,7 +7,7 @@
 ![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
-![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
+![License: MIT](https://img.shields.io/badge/License-MIT-A6E3A1?style=for-the-badge)
 ![Downloads](https://img.shields.io/github/downloads/owoNEXowo/NEX-Dashboard/total?style=for-the-badge&color=94E2D5&label=Downloads)
 
 [![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
@@ -19,6 +19,8 @@
 ## Vorschau
 
 ![Overview](overview.png)
+
+*Screenshots älterer Versionen; die aktuelle Oberfläche kann abweichen.*
 
 <details>
 <summary>Dashboard 2.6.0</summary>
@@ -88,6 +90,17 @@
 
 Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerküberwachung, 32 Farboptionen, Fastfetch-Layouts, Nerd-Font-Symbolen, Gaming-Modus, Energiesparplanverwaltung, Anwendungsstarter, Dateimanager, Systemdiagnose, Windows-Updates und Konfigurationssicherung.
 
+## Neuerungen in 2.6.2
+
+- Neu geordnetes Seitenmenü mit optionalen Trennlinien und gruppierten Personalisierungseinstellungen.
+- Adaptive Beschriftungen und verbesserte Größenanpassung der Startkarten in unterstützten Konsolen.
+- CPU-, RAM- und GPU-Metriken pro Prozess sowie eine Verknüpfung zum Windows-Ressourcenmonitor.
+- Automatische Erkennung des lokalen Netzwerkadapters; Ookla-Zustimmung bleibt bei Dashboard-Updates erhalten.
+- Getrennte Neustartanzeigen für Windows Update und Wartung.
+- Automatische Syntax-, Layout- und Zustimmungstests für PowerShell 5.1 und 7.
+
+Die Größenanpassung hängt von der Konsole und der PSReadLine-Version ab; lange oder mehrzeilige Eingaben werden nicht neu gezeichnet. Datenträger- und Netzwerkraten pro Prozess sind nicht enthalten.
+
 ## Neue Funktionen in 2.6.0
 
 - **Dashboard-Designer:** Monitorkarten neu anordnen oder ausblenden, zwischen einer und zwei Spalten wählen und das Layout in der Vorschau ansehen.
@@ -101,7 +114,7 @@ Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerkübe
 
 **Updates:** ab Version 2.5.0 können kompatible veröffentlichte Releases über das Update-Center gesucht und installiert werden. Lokale `.ps1`-Updates bleiben möglich.
 
-Öffentliche Beta: Fehler sind möglich. Installer nur aus vertrauenswürdigen Quellen ausführen.
+Öffentliche Version: Die Kompatibilität kann je nach PC und Terminal variieren. Installer nur aus vertrauenswürdigen Quellen ausführen.
 
 ---
 
