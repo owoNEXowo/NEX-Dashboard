@@ -21,10 +21,21 @@
 ![Overview](overview.png)
 
 <details>
-<summary>More screenshots</summary>
+<summary>Dashboard 2.6.0</summary>
 
 ### System Monitor
 ![System Monitor](system-monitor.png)
+
+### Personalization
+![Personalization](personalization.png)
+
+### Update Center
+![Update Center](update-center.png)
+
+</details>
+
+<details>
+<summary>Other features — earlier screenshots (2.4.9)</summary>
 
 ### System Info
 ![System Info](system-info.png)
@@ -61,7 +72,7 @@
 <details>
 <summary>Color themes</summary>
 
-### Mint & Glacier
+### Mint & Glacier (2.4.9)
 
 | Mint | Glacier |
 | :---: | :---: |
@@ -84,7 +95,7 @@ A customizable Windows PowerShell dashboard with live hardware and network monit
 - **Global Search:** press `Ctrl+K` to find Dashboard sections and key actions.
 - **Plugin Manager:** enable built-in battery, session time and shortcut widgets. No external scripts are executed.
 - **Animation Studio:** choose from five loading animations, adjust speed and preview the result.
-- **Setting explanations:** optional inline descriptions and `F1` help.
+- **Contextual help:** explanations inside setting dialogs, `F1` help, and clearer dotted setting rows.
 
 **Installation:** Download the EasyInstall ZIP from [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases), extract it and run `Install.cmd`. Follow the setup wizard.
 
