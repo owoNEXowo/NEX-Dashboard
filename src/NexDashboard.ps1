@@ -2298,7 +2298,7 @@ namespace NexDash {
         finally { $s.SpeedProc.Dispose(); $s.SpeedProc=$null; $s.SpeedOut=$null; $s.SpeedErr=$null; $s.Need=$true }
     }
     $procMetricsScript={
-        $gpu=@{};$io=@{};$tcp=@{};$gpuKnown=$false;$ioKnown=$false;$tcpKnown=$false
+        $gpu=@{};$gpuKnown=$false
         try {
             $engines=@(Get-CimInstance Win32_PerfFormattedData_GPUPerformanceCounters_GPUEngine -ErrorAction Stop)
             foreach ($engine in $engines) {
@@ -2309,20 +2309,7 @@ namespace NexDash {
             }
             $gpuKnown=$true
         } catch {}
-        try {
-            foreach ($row in @(Get-CimInstance Win32_PerfFormattedData_PerfProc_Process -ErrorAction Stop)) {
-                if ($row.IDProcess -gt 0) {$io[[string]$row.IDProcess]=[double]$row.IODataBytesPersec/1MB}
-            }
-            $ioKnown=$true
-        } catch {}
-        try {
-            foreach ($connection in @(Get-NetTCPConnection -ErrorAction Stop)) {
-                $id=[string]$connection.OwningProcess
-                if ($connection.State -eq 'Established') {$tcp[$id]=1+[int]$tcp[$id]}
-            }
-            $tcpKnown=$true
-        } catch {}
-        [pscustomobject]@{GPU=$gpu;IO=$io;TCP=$tcp;GPUKnown=$gpuKnown;IOKnown=$ioKnown;TCPKnown=$tcpKnown}
+        [pscustomobject]@{GPU=$gpu;GPUKnown=$gpuKnown}
     }
     function SampleProcesses {
         if (-not $s.ProcMemoryTotal) {try {$osMem=Get-CimInstance Win32_OperatingSystem -ErrorAction Stop;$s.ProcMemoryTotal=[double]$osMem.TotalVisibleMemorySize/1024.0} catch {}}
@@ -2335,14 +2322,12 @@ namespace NexDash {
                     $used=[Math]::Min(100,[Math]::Max(0,($cpu-$s.PrevProc[$id])*100/$dt/[Environment]::ProcessorCount))
                 }
                 $fresh[$id]=$cpu
-                $gpu=$null;$io=$null;$tcp=$null
+                $gpu=$null
                 if ($s.ProcMetrics -and ($now-$s.ProcMetricsAt) -lt 10000) {
                     $m=$s.ProcMetrics
                     if ($m.GPUKnown -and $m.GPU.ContainsKey($id)) {$gpu=$m.GPU[$id]}
-                    if ($m.IOKnown -and $m.IO.ContainsKey($id)) {$io=$m.IO[$id]}
-                    if ($m.TCPKnown) {$tcp=[int]$m.TCP[$id]}
                 }
-                $rows+=@{Id=$p.Id;Name=$p.ProcessName;RAM=$p.WorkingSet64/1MB;CPU=$used;GPU=$gpu;IO=$io;TCP=$tcp}
+                $rows+=@{Id=$p.Id;Name=$p.ProcessName;RAM=$p.WorkingSet64/1MB;CPU=$used;GPU=$gpu}
             } catch {}
         }
         $s.PrevProc=$fresh; $s.ProcAt=$now; $s.ProcRows=$rows
@@ -4180,14 +4165,14 @@ namespace NexDash {
                 }
                 2 {
                     $body.Add("$green● $(NexL 'LIVE') $gray | $(NexL 'Sort'): $($s.ProcSort) | $(NexL 'Filter'): $(SafeText $s.ProcFilter)$reset")
-                    $buttons=Buttons @(@{Label='[C] CPU';Kind='processAction';Key='C'},@{Label='[M] RAM';Kind='processAction';Key='M'},@{Label='[G] GPU';Kind='processAction';Key='G'},@{Label='[D] I/O';Kind='processAction';Key='D'},@{Label='[N] TCP';Kind='processAction';Key='N'}) $rightWidth
+                    $buttons=Buttons @(@{Label='[C] CPU';Kind='processAction';Key='C'},@{Label='[M] RAM';Kind='processAction';Key='M'},@{Label='[G] GPU';Kind='processAction';Key='G'}) $rightWidth
                     $bodyHits[$body.Count]=$buttons; $body.Add($buttons.Text)
                     $buttons=Buttons @(@{Label='[F] Find';Kind='processAction';Key='F'},@{Label='[R] Clear';Kind='processAction';Key='R'},@{Label='[T] Task mgr';Kind='processAction';Key='T'},@{Label='[W] Resource Monitor';Kind='processAction';Key='W'}) $rightWidth
                     $bodyHits[$body.Count]=$buttons; $body.Add($buttons.Text)
                     $sort=$s.ProcSort
-                    $columns=if ($rightWidth -ge 92) {@('CPU','RAM','GPU','IO','TCP')} else {@('CPU','RAM',$sort) | Select-Object -Unique}
+                    $columns=if ($rightWidth -ge 56) {@('CPU','RAM','GPU')} else {@('CPU','RAM',$sort) | Select-Object -Unique}
                     $columns=@($columns)
-                    $titles=@{CPU='CPU %';RAM='RAM MiB';GPU='GPU %';IO='I/O MiB/s';TCP='TCP active'}
+                    $titles=@{CPU='CPU %';RAM='RAM MiB';GPU='GPU %'}
                     $nameWidth=[Math]::Max(8,$rightWidth-8-12*$columns.Count)
                     $headerLine="$gray$(Fit 'PID' 8)$(Fit (NexL 'PROCESS') $nameWidth)"
                     foreach ($metric in $columns) {$headerLine+=Fit (NexL $titles[$metric]) 12}
@@ -4198,7 +4183,7 @@ namespace NexDash {
                         $s.ProcListKey=$listKey
                     }
                     $list=$s.ProcList
-                    $take=[Math]::Max(1,$maxBody-7)
+                    $take=[Math]::Max(1,$maxBody-5)
                     $s.ProcPos=[Math]::Max(0,[Math]::Min([int]$s.ProcPos,[Math]::Max(0,$list.Count-$take)))
                     foreach ($p in @($list | Select-Object -Skip $s.ProcPos -First $take)) {
                         $row="$blue$(Fit $p.Id 8)$white$(Fit $p.Name $nameWidth)"
@@ -4206,7 +4191,7 @@ namespace NexDash {
                             $v=$p[$metric];$tone=$gray;$display='--'
                             if ($null -ne $v) {
                                 if ($metric -in @('CPU','RAM')) {$v=SmoothNumber ('proc-'+$metric+'-'+$p.Id) $v}
-                                $display=if ($metric -eq 'TCP') {'{0:0}' -f $v} else {'{0:0.0}' -f $v}
+                                $display='{0:0.0}' -f $v
                                 $tone=$white
                                 if ($metric -in @('CPU','GPU')) {$tone=LoadText $v $palette[0]}
                                 elseif ($metric -eq 'RAM' -and $s.ProcMemoryTotal -gt 0) {$tone=LoadText (100.0*$v/$s.ProcMemoryTotal) $palette[0]}
@@ -4216,9 +4201,7 @@ namespace NexDash {
                         $body.Add("$row$reset")
                     }
                     $body.Add("$gray $($list.Count) $(NexL 'Processes sampled')$reset")
-                    $body.Add("$gray$(Fit (NexL 'TCP counts established connections only, not Mbps.') $rightWidth)$reset")
-                    $body.Add("$gray$(Fit (NexL 'Per-process network speed is available in Windows Resource Monitor.') $rightWidth)$reset")
-                    $hint='C CPU | M RAM | G GPU | D I/O | N TCP | W Resource Monitor'
+                    $hint='C CPU | M RAM | G GPU | W Resource Monitor | Up/Down'
                 }
                 3 {
                     $body.Add("$green● $(NexL 'LIVE')  $gray $(Icon 0xF1EB)  $(NexL 'NETWORK TRAFFIC')  /  $(NexL 'Smoothed')$reset")
@@ -4777,8 +4760,6 @@ namespace NexDash {
                             'C' { $s.ProcSort='CPU'; $s.ProcPos=0 }
                             'M' { $s.ProcSort='RAM'; $s.ProcPos=0 }
                             'G' { $s.ProcSort='GPU'; $s.ProcPos=0 }
-                            'D' { $s.ProcSort='IO'; $s.ProcPos=0 }
-                            'N' { $s.ProcSort='TCP'; $s.ProcPos=0 }
                             'F' { $v=Ask 'Process name'; if ($v) { $s.ProcFilter=$v; $s.ProcPos=0 } }
                             'R' { $s.ProcFilter=''; $s.ProcPos=0 }
                             'T' { Start-Process taskmgr.exe }

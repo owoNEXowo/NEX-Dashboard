@@ -3,6 +3,7 @@
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
 ## 2.6.2 (unreleased)
+- Simplify Processes to CPU, RAM and GPU; remove general I/O and TCP counts and their background queries. Keep Windows Resource Monitor shortcut and dedicated Network page.
 - Rework first-prompt fetch resize using PSReadLine timer events while retaining the input buffer; stop on command acceptance.
 - Debounce startup viewport changes and repaint positioned rows in one write. Add a first-prompt PSReadLine refresh shortcut (Ctrl+Alt+R) and idle refresh where supported, without replacing the input buffer.
 - Persist explicit Ookla terms and privacy acceptance locally across Dashboard restarts and upgrades; request consent again for a changed CLI binary or terms revision. Add a reset option.
