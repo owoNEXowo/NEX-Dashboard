@@ -1,0 +1,88 @@
+<div align="center">
+
+# NEX Dashboard
+
+**Dein Terminal. Dein Stil. Deine Kontrolle.**
+
+![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
+![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
+![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
+![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
+![Downloads](https://img.shields.io/github/downloads/owoNEXowo/NEX-Dashboard/total?style=for-the-badge&color=94E2D5&label=Downloads)
+
+[![Download](https://img.shields.io/badge/Download-Releases-A6E3A1?style=for-the-badge)](https://github.com/owoNEXowo/NEX-Dashboard/releases)
+
+[English](README.md) · [Русский](README.ru.md) · **Deutsch**
+
+</div>
+
+## Vorschau
+
+![Overview](overview.png)
+
+<details>
+<summary>Weitere Screenshots</summary>
+
+### Systemmonitor
+![System Monitor](system-monitor.png)
+
+### Systeminformationen
+![System Info](system-info.png)
+
+### Netzwerk
+![Network](network.png)
+
+### Dateimanager
+![File Explorer](file-explorer.png)
+
+### Systemzustand
+![System Health](system-health.png)
+
+</details>
+
+
+<details>
+<summary>Fastfetch-Designs</summary>
+
+### Karten
+
+![Fastfetch Cards](fastfetch-cards.png)
+
+### Systemübersicht
+
+![Fastfetch System Overview](fastfetch-classic.png)
+
+### Preset selector
+
+![Fetch preset selector](fetch-presets.png)
+
+</details>
+
+<details>
+<summary>Color themes / Цветовые темы / Farbdesigns</summary>
+
+### Mint & Glacier
+
+| Mint | Glacier |
+| :---: | :---: |
+| ![Mint theme](theme-mint.png) | ![Glacier theme](theme-glacier.png) |
+
+### Design-Auswahl
+
+![Built-in color themes](theme-selector.png)
+
+</details>
+
+## Über NEX Dashboard
+
+Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerküberwachung, 32 Farboptionen, Fastfetch-Layouts, Nerd-Font-Symbolen, Gaming-Modus, Energiesparplanverwaltung, Anwendungsstarter, Dateimanager, Systemdiagnose, Windows-Updates und Konfigurationssicherung.
+
+**Installation:** EasyInstall-ZIP unter [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) herunterladen, entpacken und `Install.cmd` starten. Dem Assistenten folgen.
+
+Öffentliche Beta: Fehler sind möglich. Installer nur aus vertrauenswürdigen Quellen ausführen.
+
+---
+
+[Fehler melden](https://github.com/owoNEXowo/NEX-Dashboard/issues)
+
+Erstellt von **NEX**.
