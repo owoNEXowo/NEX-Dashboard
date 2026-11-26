@@ -4,7 +4,7 @@
 
 **Your terminal. Your style. Your control.**
 
-![Version](https://img.shields.io/badge/Version-2.4.9-F5BDE6?style=for-the-badge)
+![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
 ![Beta](https://img.shields.io/badge/Status-Public%20Beta-F9E2AF?style=for-the-badge)
