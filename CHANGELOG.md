@@ -3,6 +3,7 @@
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
 ## 2.6.2 (unreleased)
+- Persist explicit Ookla terms and privacy acceptance locally across Dashboard restarts and upgrades; request consent again for a changed CLI binary or terms revision. Add a reset option.
 - Avoid switching screen buffers on first startup keystroke; repaint the fresh viewport in place.
 - Clarify active TCP connection counts and add a shortcut to Windows Resource Monitor for per-process network rates.
 - Fit built-in fetch cards to the terminal width and repaint the startup preview on resize until the first keyboard input in interactive Windows consoles. Add layout width regression tests.

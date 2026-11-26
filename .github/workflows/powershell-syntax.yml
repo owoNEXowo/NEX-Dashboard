@@ -38,3 +38,9 @@ jobs:
       - name: Test responsive fetch layouts (7)
         shell: pwsh
         run: ./tests/fetch-layout.ps1
+      - name: Test Ookla consent persistence (5.1)
+        shell: powershell
+        run: ./tests/ookla-consent.ps1
+      - name: Test Ookla consent persistence (7)
+        shell: pwsh
+        run: ./tests/ookla-consent.ps1
