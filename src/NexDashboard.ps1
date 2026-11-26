@@ -279,16 +279,27 @@ function global:Get-NexPalette([string]$theme=$global:NexPublicSettings.Theme) {
     if (-not $colors.ContainsKey($theme)) {$theme='Pink'}
     $p=$colors[$theme]
     if ($global:NexPublicSettings.LightMode) {
-        $p=@((Mix-NexColor $p[0] '161C29' 0.60),(Mix-NexColor $p[1] '161C29' 0.60),(Mix-NexColor $p[0] 'FFFFFF' 0.76),(Mix-NexColor $p[0] 'FFFFFF' 0.92),(Mix-NexColor $p[0] '151926' 0.90),(Mix-NexColor $p[1] '222836' 0.78))
+        $p=@((Get-NexLightInk $p[0]),(Get-NexLightInk $p[1]),(Mix-NexColor $p[0] 'FFFFFF' 0.66),(Mix-NexColor $p[0] 'FFFFFF' 0.85),(Mix-NexColor $p[0] '252332' 0.95),(Mix-NexColor $p[1] '414254' 0.85))
     }
     return ,$p
+}
+function global:Get-NexLightInk([string]$hex) {
+    # Preserve the input hue; use a deeper, more saturated ink on a light canvas.
+    $channels=@([Convert]::ToInt32($hex.Substring(0,2),16),[Convert]::ToInt32($hex.Substring(2,2),16),[Convert]::ToInt32($hex.Substring(4,2),16))
+    $hi=[double](($channels | Measure-Object -Maximum).Maximum)
+    $lo=[double](($channels | Measure-Object -Minimum).Minimum)
+    $delta=$hi-$lo
+    if ($delta -lt 12) {return '53515E'}
+    $spread=[Math]::Min(124.0,54.0+$delta*0.52)
+    $rgb=foreach ($channel in $channels) {[int][Math]::Round(33.0+($channel-$lo)*$spread/$delta)}
+    return ('{0:X2}{1:X2}{2:X2}' -f $rgb[0],$rgb[1],$rgb[2])
 }
 function global:NexAnsi([string]$hex,[switch]$Background) {
     $hex=$hex.TrimStart('#');$kind=if ($Background) {48} else {38}
     if (-not $Background -and $global:NexPublicSettings.LightMode) {
         $r=[Convert]::ToInt32($hex.Substring(0,2),16);$g=[Convert]::ToInt32($hex.Substring(2,2),16);$b=[Convert]::ToInt32($hex.Substring(4,2),16)
         $l=0.2126*$r+0.7152*$g+0.0722*$b
-        if ($l -gt 108) {$scale=108/$l;$hex=('{0:X2}{1:X2}{2:X2}' -f [int]($r*$scale),[int]($g*$scale),[int]($b*$scale))}
+        if ($l -gt 120) {$hex=Get-NexLightInk $hex}
     }
     "$([char]27)[$kind;2;$([Convert]::ToInt32($hex.Substring(0,2),16));$([Convert]::ToInt32($hex.Substring(2,2),16));$([Convert]::ToInt32($hex.Substring(4,2),16))m"
 }
@@ -519,7 +530,7 @@ function global:Install-NexTerminal([string]$work) {
     return $existing
 }
 function global:Mix-NexColor([string]$first,[string]$second,[double]$weight=0.5) {
-    $weight=[Math]::Max(0,[Math]::Min(1,$weight))
+    $weight=[Math]::Max(0.0,[Math]::Min(1.0,$weight))
     if ($first -notmatch '^[0-9A-Fa-f]{6}$') {$first='CDD6F4'}
     if ($second -notmatch '^[0-9A-Fa-f]{6}$') {$second='CDD6F4'}
     $rgb=for ($i=0;$i -lt 6;$i+=2) {
@@ -1593,7 +1604,7 @@ function global:Invoke-NexDashboard {
     $prefs=$global:NexPublicSettings
     $fetchState=@{Available=[bool](Get-NexFastfetch)}
     $palette=Get-NexPalette
-    $pink=NexAnsi $palette[0];$purple=NexAnsi $palette[1];$bg=NexAnsi $palette[2] -Background;$white=NexAnsi $palette[4];$gray=NexAnsi $palette[5];$green=NexAnsi 'A6E3A1';$red=NexAnsi 'F38BA8';$blue=NexAnsi '89B4FA';$muted=if ($prefs.LightMode) {NexAnsi $palette[5]} else {NexAnsi '585B70'};$reset="$e[0m";if ($prefs.LightMode) {$reset+=(NexAnsi $palette[3] -Background)+$white}
+    $pink=NexAnsi $palette[0];$purple=NexAnsi $palette[1];$bg=NexAnsi $palette[2] -Background;$white=NexAnsi $palette[4];$gray=NexAnsi $palette[5];$green=if ($prefs.LightMode) {NexAnsi '21683E'} else {NexAnsi 'A6E3A1'};$red=if ($prefs.LightMode) {NexAnsi 'A12848'} else {NexAnsi 'F38BA8'};$blue=if ($prefs.LightMode) {NexAnsi '275DAB'} else {NexAnsi '89B4FA'};$muted=if ($prefs.LightMode) {NexAnsi (Mix-NexColor $palette[5] $palette[3] 0.18)} else {NexAnsi '585B70'};$reset="$e[0m";if ($prefs.LightMode) {$reset+=(NexAnsi $palette[3] -Background)+$white}
     $names = @('Overview','System Monitor','Processes','Network','File Explorer','System Info','Windows Update','Quick Tools','System Logs','Terminal Settings','Personalization','Hardware Info','Gaming Mode','App Launcher','Update Center','System Health','Notification Center','Dashboard Designer','Startup Manager','Plugin Manager','Animation Studio') | ForEach-Object { NexL $_ }
     $codes = @(0xF015,0xF080,0xF2DB,0xF1EB,0xF07B,0xF05A,0xF021,0xF0AD,0xF15C,0xF013,0xF1DE,0xF2DB,0xF11B,0xF135,0xF021,0xF0FA,0xF0F3,0xF009,0xF135,0xF1E6,0xF0D0)
     # Sidebar order is independent from stable page IDs used by workers and shortcuts.
@@ -1932,7 +1943,7 @@ namespace NexDash {
             while ($true) {
                 $w=[Console]::WindowWidth; $h=[Console]::WindowHeight
                 if ($w -lt 42 -or $h -lt 18) {
-                    Write-Host "$e[2J$e[H$pink$(NexL 'Enlarge the window or press Esc.')$reset" -NoNewline
+                    Write-Host "$reset$e[2J$e[H$pink$(NexL 'Enlarge the window or press Esc.')$reset" -NoNewline
                     $ev=WaitNexEvent; if ($ev.Key -eq 'Escape') {return $null}; continue
                 }
                 $inner=[Math]::Min(112,$w-4)
@@ -2005,8 +2016,8 @@ namespace NexDash {
                 $rows+="$pink$applyButton$reset  $purple$cancelButton$reset"
                 $rows+="$gray$(NexL 'Enter: Apply | Esc: Cancel')$reset"
                 $y=[Math]::Max(1,[int][Math]::Floor(($h-$rows.Count)/2)+1)
-                $frame="$e[2J$e[?25l"
-                for ($i=0;$i -lt $rows.Count -and ($y+$i) -le $h;$i++) {$frame+="$e[$($y+$i);${x}H$(ClipAnsi $rows[$i] $inner)"}
+                $frame="$reset$e[2J$e[?25l"
+                for ($i=0;$i -lt $rows.Count -and ($y+$i) -le $h;$i++) {$frame+="$e[$($y+$i);${x}H$reset$(ClipAnsi $rows[$i] $inner)"}
                 Write-Host $frame -NoNewline
                 $ev=WaitNexEvent
                 if ($ev.Key -eq 'Escape') {return $null}
@@ -2050,7 +2061,7 @@ namespace NexDash {
             while ($true) {
                 $w=[Console]::WindowWidth; $h=[Console]::WindowHeight
                 if ($w -lt 32 -or $h -lt 10) {
-                    Write-Host "$e[2J$e[H$pink $(NexL 'Enlarge the window or press Esc.')$reset" -NoNewline
+                    Write-Host "$reset$e[2J$e[H$pink $(NexL 'Enlarge the window or press Esc.')$reset" -NoNewline
                     $ev=WaitNexEvent; if ($ev.Key -eq 'Escape') { return $null }; continue
                 }
                 if ($searchMode -and ($null -eq $previousSearch -or $previousSearch -cne $value)) {
@@ -2074,7 +2085,8 @@ namespace NexDash {
                     $idx=$offset+$i; $style=if ($idx -eq $pick) { "$bg$pink" } else { $white }
                     if ($title -eq 'Choose theme') {
                         $tp=Get-NexPalette ([string]$choiceValues[$idx])
-                        $label=Fit ('  '+(NexL ([string]$choices[$idx]))) ([Math]::Max(1,$inner-10))
+                        $marker=if ($idx -eq $pick) {'❯ '} else {'  '}
+                        $label=Fit ($marker+(NexL ([string]$choices[$idx]))) ([Math]::Max(1,$inner-10))
                         $swatches="$(NexAnsi $tp[0])● $(NexAnsi $tp[1])● $(NexAnsi $tp[3] -Background)$(NexAnsi $tp[4]) Aa $reset"
                         $rows+="$style$label$reset $swatches"
                     } else {$rows+= "$style$(Fit ('  '+(NexL ([string]$choices[$idx]))) $inner)$reset"}
@@ -2089,8 +2101,8 @@ namespace NexDash {
                 $cancelButton='[ '+(NexL 'Cancel')+' ]';$rows+="$pink[ OK ]$reset  $purple$cancelButton$reset"
                 $rows+="$gray$(NexL 'Enter OK  |  Esc Cancel  |  Ctrl+V Paste')$reset"
                 $y=[Math]::Max(1,[int][Math]::Floor(($h-$rows.Count)/2)+1)
-                $frame="$e[2J$e[?25l"
-                for ($i=0;$i -lt $rows.Count;$i++) { $frame+="$e[$($y+$i);${x}H$(ClipAnsi $rows[$i] $inner)" }
+                $frame="$reset$e[2J$e[?25l"
+                for ($i=0;$i -lt $rows.Count;$i++) { $frame+="$e[$($y+$i);${x}H$reset$(ClipAnsi $rows[$i] $inner)" }
                 $frame+="$e[$($y+$fieldRow);$($x+3+$caret-$left)H$e[?25h"
                 Write-Host $frame -NoNewline
                 $ev=WaitNexEvent; $key=$ev.Key
@@ -2480,7 +2492,7 @@ namespace NexDash {
             while ($true) {
                 $w=[Console]::WindowWidth; $h=[Console]::WindowHeight
                 if ($w -lt 32 -or $h -lt 10) {
-                    Write-Host "$e[2J$e[H$pink $(NexL 'Enlarge the window or press Esc.')$reset" -NoNewline
+                    Write-Host "$reset$e[2J$e[H$pink $(NexL 'Enlarge the window or press Esc.')$reset" -NoNewline
                     $ev=WaitNexEvent; if ($ev.Key -eq 'Escape') { return $false }; continue
                 }
                 $inner=[Math]::Min(64,$w-4)
@@ -2488,8 +2500,8 @@ namespace NexDash {
                 $a=if ($choice -eq 0) {"$bg$red"} else {$red}; $b=if ($choice -eq 1) {"$bg$pink"} else {$gray}
                 $yes='[ '+(NexL 'Confirm')+' ]'; $no='[ '+(NexL 'Cancel')+' ]'; $action='  '+$yes+'  '+$no
                 $lines=@("$pink╭$('─'*$inner)╮$reset", "$pink│$reset$red$(Fit ('  '+(NexL $title)) $inner)$pink│$reset", "$pink│$reset$white$(Fit ('  '+$detail) $inner)$pink│$reset", "$pink│$reset$gray$(Fit ('  '+(NexL $note)) $inner)$pink│$reset", "$pink│$(' '*$inner)│$reset", "$pink│$reset  $a$yes$reset  $b$no$reset$(' '*[Math]::Max(0,$inner-$action.Length))$pink│$reset", "$pink╰$('─'*$inner)╯$reset", "$gray  $(NexL 'Click / Left / Right / Enter / Esc')$reset")
-                $frame="$e[2J$e[?25l"
-                for ($j=0;$j -lt $lines.Count -and $y+$j -le $h;$j++) { $frame+="$e[$($y+$j);${x}H$(ClipAnsi $lines[$j] ($w-$x+1))" }
+                $frame="$reset$e[2J$e[?25l"
+                for ($j=0;$j -lt $lines.Count -and $y+$j -le $h;$j++) { $frame+="$e[$($y+$j);${x}H$reset$(ClipAnsi $lines[$j] ($w-$x+1))" }
                 Write-Host $frame -NoNewline
                 $ev=WaitNexEvent; $k=$ev.Key
                 if ($k -eq 'Click' -and $ev.Y -eq $y+4) {
@@ -2603,13 +2615,13 @@ namespace NexDash {
                     if ($dk -eq 'LeftArrow') { $choice=($choice+2)%3 }
                     if ($dk -eq 'Enter') { return @('Save','Discard','Cancel')[$choice] }
                 }
-            } finally { Write-Host "$e[2J$e[H" -NoNewline }
+            } finally { Write-Host "$reset$e[2J$e[H" -NoNewline }
         }
         try {
-            Write-Host "$e[2J$e[H" -NoNewline
+            Write-Host "$reset$e[2J$e[H" -NoNewline
             while (-not $quit) {
                 $w=[Console]::WindowWidth; $h=[Console]::WindowHeight
-                if ($w -lt 30 -or $h -lt 9) { Write-Host "$e[2J$e[H${pink}Enlarge terminal, or Esc to close.$reset" -NoNewline }
+                if ($w -lt 30 -or $h -lt 9) { Write-Host "$reset$e[2J$e[H${pink}Enlarge terminal, or Esc to close.$reset" -NoNewline }
                 else {
                     $view=$h-4; $avail=$w-9
                     $top=[Math]::Max(0,[Math]::Min($top,$r)); if ($r -ge $top+$view) { $top=$r-$view+1 }
@@ -3267,7 +3279,7 @@ namespace NexDash {
         $warnings=New-Object 'System.Collections.Generic.List[string]'
         PauseMouse
         try {
-            Write-Host "$e[?25h$e[2J$e[H$pink$(NexL 'Restoring configuration...')$reset"
+            Write-Host "$reset$e[?25h$e[2J$e[H$pink$(NexL 'Restoring configuration...')$reset"
             [Net.ServicePointManager]::SecurityProtocol=$oldTls -bor [Net.SecurityProtocolType]::Tls12
             $hostInfo=Get-NexTerminalHost
             if (-not $hostInfo) {try {$hostInfo=Install-NexTerminal $work} catch {$warnings.Add((NexL 'Windows Terminal setup incomplete.'))}}
@@ -3384,7 +3396,7 @@ namespace NexDash {
                         if (-not $action) {$changed=$false;break}
                         if ($action -eq 'install') {
                             PauseMouse
-                            try {Write-Host "$e[?25h$e[2J$e[H" -NoNewline;$null=Install-NexFastfetch;$fetchState.Available=$true}
+                            try {Write-Host "$reset$e[?25h$e[2J$e[H" -NoNewline;$null=Install-NexFastfetch;$fetchState.Available=$true}
                             catch {Notice $_.Exception.Message;$changed=$false}
                             finally {ResumeMouse;Write-Host "$e[?25l" -NoNewline;ResetDraw}
                             if (-not $changed) {break}
@@ -3409,7 +3421,7 @@ namespace NexDash {
                 $oldTls=[Net.ServicePointManager]::SecurityProtocol
                 PauseMouse
                 try {
-                    Write-Host "$e[?25h$e[2J$e[H" -NoNewline
+                    Write-Host "$reset$e[?25h$e[2J$e[H" -NoNewline
                     $null=New-Item -ItemType Directory -Path $work -Force
                     [Net.ServicePointManager]::SecurityProtocol=$oldTls -bor [Net.SecurityProtocolType]::Tls12
                     if (-not (Install-NexFont $work)) {throw 'Nerd Font not available after setup.'}
@@ -3442,7 +3454,7 @@ namespace NexDash {
             }
             'E' {
                 $changed=$false;if (-not (NexActionHelp 'Preview fetch' $global:NexPersonalHelp['E'])) {break};PauseMouse
-                try {Write-Host "$e[?25h$e[2J$e[H" -NoNewline;Show-NexPublicFetch;Write-Host "`nEsc / Enter"; $null=[Console]::ReadKey($true)} finally {ResumeMouse;Write-Host "$e[?25l" -NoNewline;ResetDraw}
+                try {Write-Host "$reset$e[?25h$e[2J$e[H" -NoNewline;Show-NexPublicFetch;Write-Host "`nEsc / Enter"; $null=[Console]::ReadKey($true)} finally {ResumeMouse;Write-Host "$e[?25l" -NoNewline;ResetDraw}
             }
             default {$changed=$false}
         }
@@ -4273,7 +4285,7 @@ namespace NexDash {
         $w=[Console]::WindowWidth; $h=[Console]::WindowHeight
         if ($w -lt 58 -or $h -lt 16) {
             $size="${w}x${h}"
-            if ($s.Size -ne $size) { $smallMsg='Enlarge terminal (58 x 16 min).'; Write-Host "$e[2J$e[H${pink}$smallMsg$reset" -NoNewline; $s.Size=$size; $s.Old=@() }
+            if ($s.Size -ne $size) { $smallMsg='Enlarge terminal (58 x 16 min).'; Write-Host "$reset$e[2J$e[H${pink}$smallMsg$reset" -NoNewline; $s.Size=$size; $s.Old=@() }
             $s.Hits=@(); return
         }
         $wide=($w -ge 88 -and $s.Page -ne 1); $leftWidth=25; $rightWidth=if ($wide) {$w-$leftWidth-4} else {$w-3}
@@ -4789,7 +4801,7 @@ namespace NexDash {
         if ($s.Size -ne $size) { $frame+="$reset$e[2J"; $s.Old=@(); $s.Size=$size }
         for ($i=0;$i -lt [Math]::Min($rows.Count,$h);$i++) {
             $line=ClipAnsi $rows[$i] ($w-1)
-            if ($i -ge $s.Old.Count -or $s.Old[$i] -cne $line) { $row=$i+1; $frame+="$e[${row};1H$line$reset$e[K" }
+            if ($i -ge $s.Old.Count -or $s.Old[$i] -cne $line) { $row=$i+1; $frame+="$e[${row};1H$reset$line$reset$e[K" }
             $rows[$i]=$line
         }
         if ($frame) { Write-Host $frame -NoNewline }
@@ -4797,6 +4809,7 @@ namespace NexDash {
     }
     function ClipAnsi([string]$line,[int]$width) {
         if ($width -le 0) { return '' }
+        if ($prefs.LightMode) {$line=[regex]::Replace($line,'\x1b\[0m(?!\x1b\[48;2;)',$reset)}
         $plain=[regex]::Replace($line,'\x1b\[[0-9;]*m','')
         if ($plain.Length -le $width -and $plain -notmatch '[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uD800-\uDFFF\uF900-\uFAFF\uFE10-\uFE6F\uFF00-\uFF60]') { return ($line+$reset) }
         $sb=New-Object System.Text.StringBuilder; $n=0
@@ -4820,7 +4833,7 @@ namespace NexDash {
     $s.Job=$null; $s.Worker=$null; $s.Preview=$null; $s.ProcPos=0; $s.InfoPos=0; $s.ToolPos=0; $s.ToolDisplayCount=0; $s.PingNext=0L
     $s.LogLoaded=$false; $lastClock=-1; $lastTheme=-1; $running=$true
     try {
-        Write-Host "$e[?1049h$e[?25l$e[2J$e[H" -NoNewline
+        Write-Host "$e[?1049h$reset$e[?25l$e[2J$e[H" -NoNewline
         while ($running) {
             PollWorker
             if ($s.ScanActive -and -not $s.Job) {
@@ -4843,7 +4856,7 @@ namespace NexDash {
             $themeKey="$($prefs.Theme)/$($prefs.Accent)/$($prefs.Language)/$($prefs.Icons)/$($prefs.LightMode)"
             if ($lastTheme -ne $themeKey) {
                 $lastTheme=$themeKey;$palette=Get-NexPalette
-                $pink=NexAnsi $palette[0];$purple=NexAnsi $palette[1];$bg=NexAnsi $palette[2] -Background;$white=NexAnsi $palette[4];$gray=NexAnsi $palette[5];$green=NexAnsi 'A6E3A1';$red=NexAnsi 'F38BA8';$blue=NexAnsi '89B4FA';$muted=if ($prefs.LightMode) {NexAnsi $palette[5]} else {NexAnsi '585B70'};$reset="$e[0m";if ($prefs.LightMode) {$reset+=(NexAnsi $palette[3] -Background)+$white}
+                $pink=NexAnsi $palette[0];$purple=NexAnsi $palette[1];$bg=NexAnsi $palette[2] -Background;$white=NexAnsi $palette[4];$gray=NexAnsi $palette[5];$green=if ($prefs.LightMode) {NexAnsi '21683E'} else {NexAnsi 'A6E3A1'};$red=if ($prefs.LightMode) {NexAnsi 'A12848'} else {NexAnsi 'F38BA8'};$blue=if ($prefs.LightMode) {NexAnsi '275DAB'} else {NexAnsi '89B4FA'};$muted=if ($prefs.LightMode) {NexAnsi (Mix-NexColor $palette[5] $palette[3] 0.18)} else {NexAnsi '585B70'};$reset="$e[0m";if ($prefs.LightMode) {$reset+=(NexAnsi $palette[3] -Background)+$white}
                 $names=@('Overview','System Monitor','Processes','Network','File Explorer','System Info','Windows Update','Quick Tools','System Logs','Terminal Settings','Personalization','Hardware Info','Gaming Mode','App Launcher','Update Center','System Health','Notification Center','Dashboard Designer','Startup Manager','Plugin Manager','Animation Studio') | ForEach-Object {NexL $_}
                 ResetDraw
             }
