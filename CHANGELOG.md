@@ -3,6 +3,7 @@
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
 ## 2.6.2 (unreleased)
+- Reorder sidebar by purpose, with optional group separators saved in preferences and portable backups.
 - Adaptive information labels and grouped personalization settings.
 - Detect local Ethernet/Wi-Fi/mobile adapters automatically; distinguish Windows Update restart status from servicing markers.
 - Process GPU engine load, general I/O throughput and established TCP connection counts (where available).
