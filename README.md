@@ -77,7 +77,18 @@
 
 A customizable Windows PowerShell dashboard with live hardware and network monitoring, 32 color options, custom Fastfetch layouts, Nerd Font icons, gaming and power management, an app launcher, file explorer, system diagnostics, Windows updates and configuration backup.
 
+## Features added in 2.6.0
+
+- **Dashboard Designer:** reorder or hide monitor cards, choose one or two columns, and preview the layout.
+- **Startup Manager:** inspect startup apps and their commands, and open Windows startup settings.
+- **Global Search:** press `Ctrl+K` to find Dashboard sections and key actions.
+- **Plugin Manager:** enable built-in battery, session time and shortcut widgets. No external scripts are executed.
+- **Animation Studio:** choose from five loading animations, adjust speed and preview the result.
+- **Setting explanations:** optional inline descriptions and `F1` help.
+
 **Installation:** Download the EasyInstall ZIP from [Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases), extract it and run `Install.cmd`. Follow the setup wizard.
+
+**Updates:** from version 2.5.0 onward, use Update Center to check for and install compatible published releases. Local `.ps1` updates are still supported.
 
 Public beta: bugs may occur. Only run installers from a trusted source.
 
