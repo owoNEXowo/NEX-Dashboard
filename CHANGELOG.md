@@ -2,6 +2,11 @@
 
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
+## 2.6.2 (unreleased)
+- Prefer a stable release when stable and prerelease versions have the same number.
+- Keep native powercfg diagnostics out of the result stream and check its exit code.
+- Add Windows PowerShell 5.1 and PowerShell 7 parser checks.
+
 ## 2.6.1
 - Optional Ookla Speedtest CLI installation and SHA-256 verification.
 

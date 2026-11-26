@@ -87,7 +87,7 @@ Initialize-NexPublic
             catch {Write-Warning ((NexL 'Speedtest installation failed')+': '+$_.Exception.Message)}
         }
     }
-    Write-Host '[OK] NEX Dashboard 2.6.1 Public Edition installed.' -ForegroundColor Green
+    Write-Host '[OK] NEX Dashboard 2.6.2 Public Edition installed.' -ForegroundColor Green
     $hostInfo=Get-NexTerminalHost
     if (-not $wasConfigured -or -not $hostInfo -or -not (Test-Path -LiteralPath $hostInfo.Settings -PathType Leaf) -or ($global:NexPublicSettings.Icons -and -not (Test-NexNerdFont))) {
         $null=Initialize-NexAppearance
@@ -287,7 +287,7 @@ function global:NexSetup {
         for ($i=0;$i -lt $options.Count;$i++) {Write-Host ('  {0}. {1}' -f ($i+1),(NexL $options[$i]))}
         while ($true) {$v=Read-Host "[Enter = $(NexL $current)]"; if ([string]::IsNullOrWhiteSpace($v)) {return $current};$n=0;if ([int]::TryParse($v,[ref]$n) -and $n -ge 1 -and $n -le $options.Count) {return $options[$n-1]}}
     }
-    Write-Host ('{0} / DASHBOARD 2.6.1' -f (Get-NexName)) -ForegroundColor Magenta
+    Write-Host ('{0} / DASHBOARD 2.6.2' -f (Get-NexName)) -ForegroundColor Magenta
     $choice=Choose 'Language / Язык / Sprache' @('English','Русский','Deutsch') (@{en='English';ru='Русский';de='Deutsch'}[$c.Language])
     $c.Language=@{English='en';'Русский'='ru';Deutsch='de'}[$choice]
     $v=Read-Host "$(NexL 'Display name') [$(Get-NexName)]";if ($v) {$c.Name=($v -replace '[\x00-\x1F\x7F-\x9F]','').Trim();if ($c.Name.Length -gt 32) {$c.Name=$c.Name.Substring(0,32)}}
@@ -2838,7 +2838,7 @@ namespace NexDash {
         $custom=$null;$omitted=$false
         $ff=Get-NexCustomFetchConfig
         if ($ff) {try {$custom=Get-NexPortableFetch ([IO.File]::ReadAllText($ff))} catch {$omitted=$true}}
-        $pack=[ordered]@{Format='NEX-Portable-Configuration';Schema=1;Version='2.6.1';Preferences=(Get-NexBackupPreferences ([pscustomobject]$prefs));Appearance=$a;Scheme=$scheme;CustomFetch=$custom;CustomFetchOmitted=$omitted;HasTerminalAppearance=[bool]$s.Config}
+        $pack=[ordered]@{Format='NEX-Portable-Configuration';Schema=1;Version='2.6.2';Preferences=(Get-NexBackupPreferences ([pscustomobject]$prefs));Appearance=$a;Scheme=$scheme;CustomFetch=$custom;CustomFetchOmitted=$omitted;HasTerminalAppearance=[bool]$s.Config}
         Write-NexBackupData $path (ConvertTo-Json -InputObject $pack -Depth 20)
         if ($omitted) {Notice 'Configuration exported. External Fastfetch assets/options were omitted.'}
         elseif (-not $s.Config) {Notice 'Configuration exported with default terminal appearance.'}
@@ -3318,7 +3318,7 @@ namespace NexDash {
                 $v=[version]$Matches[1]
                 [pscustomobject]@{Version=$v;Release=$r}
             })
-            $latest=$candidates | Sort-Object Version -Descending | Select-Object -First 1
+            $latest=$candidates | Sort-Object -Property @{Expression='Version';Descending=$true}, @{Expression={$_.Release.prerelease};Descending=$false} | Select-Object -First 1
             if (-not $latest) {return [pscustomobject]@{Tag='';Newer=$false;Comparable=$false;Available=$false;Reason='No published releases found.';At=Get-Date}}
             $r=$latest.Release;$v=$latest.Version;$tag=[string]$r.tag_name
             $name='NexDashboard-'+$v.ToString()+'-Public.ps1'
@@ -3326,7 +3326,7 @@ namespace NexDash {
             $url='https://github.com/'+$repo+'/releases/download/'+$tag+'/'+$name
             $valid=($asset.Count -eq 1 -and $asset[0].browser_download_url -ceq $url -and [long]$asset[0].size -gt 0 -and [long]$asset[0].size -le 20MB -and [string]$asset[0].digest -match '^sha256:[0-9a-fA-F]{64}$')
             $hash=if ($valid) {([string]$asset[0].digest).Substring(7)} else {''}
-            [pscustomobject]@{Tag=$tag;Version=$v.ToString();Newer=($v -gt [version]'2.6.1');Comparable=$true;Available=[bool]$valid;Url=$url;Hash=$hash;Size=$(if ($valid) {[long]$asset[0].size} else {0});Beta=[bool]$r.prerelease;Reason=$(if ($valid) {''} else {'Release installer or SHA-256 unavailable.'});At=Get-Date}
+            [pscustomobject]@{Tag=$tag;Version=$v.ToString();Newer=($v -gt [version]'2.6.2');Comparable=$true;Available=[bool]$valid;Url=$url;Hash=$hash;Size=$(if ($valid) {[long]$asset[0].size} else {0});Beta=[bool]$r.prerelease;Reason=$(if ($valid) {''} else {'Release installer or SHA-256 unavailable.'});At=Get-Date}
         } finally {[Net.ServicePointManager]::SecurityProtocol=$oldTls}
     }
     $onlineDownloadScript={
@@ -3336,7 +3336,7 @@ namespace NexDash {
         try {
             [Net.ServicePointManager]::SecurityProtocol=$oldTls -bor [Net.SecurityProtocolType]::Tls12
             $version=[version]$a.Version
-            if ($version -le [version]'2.6.1' -or $a.Tag -notmatch '^v?(\d+\.\d+\.\d+)(?:-beta(?:[.-]\d+)?)?$' -or [version]$Matches[1] -ne $version) {throw 'Invalid update version.'}
+            if ($version -le [version]'2.6.2' -or $a.Tag -notmatch '^v?(\d+\.\d+\.\d+)(?:-beta(?:[.-]\d+)?)?$' -or [version]$Matches[1] -ne $version) {throw 'Invalid update version.'}
             $expected='https://github.com/owoNEXowo/NEX-Dashboard/releases/download/'+$a.Tag+'/NexDashboard-'+$version.ToString()+'-Public.ps1'
             if ($a.Url -cne $expected -or $a.Hash -notmatch '^[0-9a-fA-F]{64}$' -or [long]$a.Size -le 0 -or [long]$a.Size -gt 20MB) {throw 'Invalid update metadata.'}
             Invoke-WebRequest -UseBasicParsing -Uri $expected -Headers @{'User-Agent'='NEX-Dashboard'} -OutFile $a.Path -TimeoutSec 60 -MaximumRedirection 5
@@ -3430,7 +3430,7 @@ namespace NexDash {
         $text=[IO.File]::ReadAllText($path);$tokens=$null;$errors=$null;$null=[Management.Automation.Language.Parser]::ParseInput($text,[ref]$tokens,[ref]$errors)
         if ($errors.Count -or $text -notmatch 'NEX Dashboard (\d+\.\d+\.\d+) Public Edition installed\.' -or $text -notmatch '# BEGIN NEX PUBLIC EDITION' -or $text -notmatch '\[switch\]\$Install') {throw (NexL 'Not a valid NEX installer.')}
         $null=$text -match 'NEX Dashboard (\d+\.\d+\.\d+) Public Edition installed\.';$ver=[version]$Matches[1]
-        if ($ver -lt [version]'2.6.1') {Notice 'Select a newer installer.';return}
+        if ($ver -lt [version]'2.6.2') {Notice 'Select a newer installer.';return}
         if (ConfirmNex 'Install local update' ("NEX Dashboard $ver") (NexL 'Only run installers from a source you trust.')) {$s.PendingInstaller=$path;$s.PendingVersion=$ver}
     }
     function ShowNexReleaseDetails([string]$kind) {
@@ -3440,7 +3440,7 @@ namespace NexDash {
         $lines=New-Object 'System.Collections.Generic.List[string]'
         if ($kind -eq 'about') {
             $title=NexL 'About NEX Dashboard'
-            $raw=@('NEX Dashboard 2.6.1',(NexL 'Public Edition'),'',(NexL 'A customizable PowerShell dashboard for monitoring, tools and terminal appearance.'),'',(NexL 'Supports English, Russian and German.'),(NexL 'Local updates keep your personal settings.'),'',(NexL 'Official releases are checked before installation.'),(NexL 'Local updates reload Dashboard in this terminal.'))
+            $raw=@('NEX Dashboard 2.6.2',(NexL 'Public Edition'),'',(NexL 'A customizable PowerShell dashboard for monitoring, tools and terminal appearance.'),'',(NexL 'Supports English, Russian and German.'),(NexL 'Local updates keep your personal settings.'),'',(NexL 'Official releases are checked before installation.'),(NexL 'Local updates reload Dashboard in this terminal.'))
         } else {
             $title=NexL 'Version history'
             $raw=@((NexL 'Recent release notes'),'')
@@ -3629,9 +3629,9 @@ namespace NexDash {
                 if (-not $plan -or $plan.Id -notmatch '^[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$') {return}
                 if ($plan.Id -eq $s.Game.Active) {Notice 'This power plan is already active.';$s.Next=0L;return}
                 if (ConfirmNex 'Apply power plan' $plan.Name (NexL 'No CPU or GPU overclocking.')) {
-                    $result=@(powercfg.exe /setactive $plan.Id 2>&1)
+                    $result=@(powercfg.exe /setactive $plan.Id 2>$null)
                     if ($LASTEXITCODE -ne 0) {Notice ('{0} {1}' -f (NexL 'Power plan change failed.'),(SafeText ($result -join ' ')));$s.Next=0L;return}
-                    $current=@(powercfg.exe /getactivescheme 2>&1)
+                    $current=@(powercfg.exe /getactivescheme 2>$null)
                     $exitCode=$LASTEXITCODE
                     $match=[regex]::Match(($current -join ' '),'(?i)\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b')
                     $s.GameChangedAt=$clock.ElapsedMilliseconds;$s.Next=0L
@@ -3733,7 +3733,7 @@ namespace NexDash {
                 for ($i=0;$i -lt $s.Apps.Count;$i++) {$app=$s.Apps[$i];if ($app.Name.IndexOf($s.AppFilter,[StringComparison]::OrdinalIgnoreCase) -lt 0) {continue};$bodyHits[$body.Count]=@{Kind='extra';Index="app:$i"};$body.Add("$pink$(Icon 0xF135)  $white$(SafeText $app.Name)$reset")}
             }
             14 {
-                EHead 'NEX Dashboard' 0xF021; $body.Add((Label 'Installed version' '2.6.1'));$body.Add((Label 'Release repository' 'owoNEXowo/NEX-Dashboard'))
+                EHead 'NEX Dashboard' 0xF021; $body.Add((Label 'Installed version' '2.6.2'));$body.Add((Label 'Release repository' 'owoNEXowo/NEX-Dashboard'))
                 $body.Add('');$bodyHits[$body.Count]=@{Kind='extra';Index='U'}
                 $body.Add("$green[U] $(Icon 0xF019)  $(NexL 'Download and install update')$reset")
                 EButton 'R' 'Check for releases' 0xF021;EButton 'O' 'Open releases' 0xF0AC
@@ -4171,13 +4171,13 @@ namespace NexDash {
         }
         $rows=New-Object 'System.Collections.Generic.List[string]'; $hits=New-Object 'System.Collections.Generic.List[object]'
         $accentName=(NexL $prefs.Theme).ToUpperInvariant()
-        $header="$pink  $(SafeText (Get-NexName))   /   D A S H B O A R D   2.6.1   $purple / $accentName   $gray • $(Get-Date -Format 'HH:mm:ss')$reset"
+        $header="$pink  $(SafeText (Get-NexName))   /   D A S H B O A R D   2.6.2   $purple / $accentName   $gray • $(Get-Date -Format 'HH:mm:ss')$reset"
         $modules=@(NexHeaderModules)
         $headLen=Get-NexLogoWidth ([regex]::Replace($header,'\x1b\[[0-9;]*m',''))
         $wantedWidth=0
         foreach ($module in $modules) {$wantedWidth+=(Get-NexLogoWidth ([regex]::Replace($module.Text,'\x1b\[[0-9;]*m','')))+3}
         if ($modules.Count -and $headLen+$wantedWidth -gt $w-1) {
-            $header="$pink $(SafeText (Get-NexName)) / DASHBOARD 2.6.1 $purple / $accentName $gray • $(Get-Date -Format 'HH:mm:ss')$reset"
+            $header="$pink $(SafeText (Get-NexName)) / DASHBOARD 2.6.2 $purple / $accentName $gray • $(Get-Date -Format 'HH:mm:ss')$reset"
             $headLen=Get-NexLogoWidth ([regex]::Replace($header,'\x1b\[[0-9;]*m',''))
         }
         $kept=@();$moduleWidth=0
@@ -4548,4 +4548,4 @@ function global:dashboard {
         $page=14
     } while ($global:NexDashboardReloadRequested)
 }
-$global:NexPublicVersion='2.6.1'
+$global:NexPublicVersion='2.6.2'
