@@ -2,6 +2,12 @@
 
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
+## 2.7.0 (test only)
+
+- Sequential read-only PC diagnostics, with actionable findings and confirmed restart.
+- Theme-derived light appearance and a confirmed NEX preference reset with backup.
+- No public release or changes to main.
+
 ## 2.6.2 — 2026-11-26
 
 - Reorganized sidebar with optional group separators and grouped personalization settings.
