@@ -3,6 +3,9 @@
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
 ## 2.6.2 (unreleased)
+- Adaptive information labels and grouped personalization settings.
+- Detect local Ethernet/Wi-Fi/mobile adapters automatically; distinguish Windows Update restart status from servicing markers.
+- Process GPU engine load, general I/O throughput and established TCP connection counts (where available).
 - Prefer a stable release when stable and prerelease versions have the same number.
 - Keep native powercfg diagnostics out of the result stream and check its exit code.
 - Add Windows PowerShell 5.1 and PowerShell 7 parser checks.
