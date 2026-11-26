@@ -291,7 +291,16 @@ function global:Get-NexLightInk([string]$hex) {
     $delta=$hi-$lo
     if ($delta -lt 12) {return '53515E'}
     $spread=[Math]::Min(124.0,54.0+$delta*0.52)
-    $rgb=foreach ($channel in $channels) {[int][Math]::Round(33.0+($channel-$lo)*$spread/$delta)}
+    $rgb=@(foreach ($channel in $channels) {[int][Math]::Round(33.0+($channel-$lo)*$spread/$delta)})
+    # Bright yellow/green/cyan need a lower luminance than magenta or blue.
+    for ($i=0;$i -lt 16;$i++) {
+        $linear=@(foreach ($channel in $rgb) {
+            $c=$channel/255.0
+            if ($c -le 0.04045) {$c/12.92} else {[Math]::Pow(($c+0.055)/1.055,2.4)}
+        })
+        if ((0.2126*$linear[0]+0.7152*$linear[1]+0.0722*$linear[2]) -le 0.10) {break}
+        $rgb=@(foreach ($channel in $rgb) {[int][Math]::Round($channel*0.92)})
+    }
     return ('{0:X2}{1:X2}{2:X2}' -f $rgb[0],$rgb[1],$rgb[2])
 }
 function global:NexAnsi([string]$hex,[switch]$Background) {
