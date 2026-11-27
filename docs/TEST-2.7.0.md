@@ -20,3 +20,5 @@ Personalization → Reset Dashboard to defaults (Delete). Confirm only after exp
 - Report screenshots with personal details hidden.
 
 Public stable release remains 2.6.2.
+
+Light backgrounds now use a more visible pastel tint derived from the accent. Event history details include Windows' original description, timestamp, and relevant review hints; no logs are deleted and no automatic repairs are performed.

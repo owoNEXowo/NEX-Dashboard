@@ -33,7 +33,7 @@ try {
         $light=Get-NexPalette $theme
         if ($light.Count -ne 6 -or $dark.Count -ne 6) {throw "Invalid palette: $theme"}
         foreach ($c in $light) {if ($c -notmatch '^[A-F0-9]{6}$') {throw "Invalid color: $c"}}
-        foreach ($i in @(0,2,4)) {if ([Convert]::ToInt32($light[3].Substring($i,2),16) -lt 215) {throw "Background is not light: $theme"}}
+        foreach ($i in @(0,2,4)) {if ([Convert]::ToInt32($light[3].Substring($i,2),16) -lt 200) {throw "Background is not light: $theme"}}
         $accents[$light[0]]=$true;$backgrounds[$light[3]]=$true
         foreach ($index in @(0,1,4,5)) {
             $contrast=((Luminance $light[3])+0.05)/((Luminance $light[$index])+0.05)
@@ -41,6 +41,8 @@ try {
         }
         if ($light[3] -eq $dark[3]) {throw "No light variation: $theme"}
     }
+    if ((Get-NexLightCanvas 'F5C2E7') -ne 'FFC9F0') {throw 'Sakura tint missing'}
+    if ((Get-NexLightCanvas 'A6E3A1') -ne 'CDFFC9') {throw 'Mint tint missing'}
     if ($accents.Count -lt 12 -or $backgrounds.Count -lt 12) {throw 'Light themes collapsed into identical colors'}
     $defaults=Get-NexPreferences -DefaultsOnly
     if ($defaults.LightMode -or $defaults.Theme -ne 'Pink') {throw 'Factory preferences are not default'}
