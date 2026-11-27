@@ -22,3 +22,5 @@ Personalization → Reset Dashboard to defaults (Delete). Confirm only after exp
 Public stable release remains 2.6.2.
 
 Light backgrounds now use a more visible pastel tint derived from the accent. Event history details include Windows' original description, timestamp, and relevant review hints; no logs are deleted and no automatic repairs are performed.
+
+The native Windows Terminal window theme now follows NEX light/dark mode and the selected palette. Applying the shared theme replaces profile tab-color overrides and preserves opacity and Acrylic settings. Actual transparency depends on Windows composition: disable Acrylic for unblurred transparency. The active tab is solid by Windows Terminal design. Reopen tabs or the terminal if native appearance does not update immediately.
