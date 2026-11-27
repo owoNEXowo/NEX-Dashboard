@@ -75,6 +75,23 @@ try {
     if ((DecodeSfcOutput $utf16) -cne $sample -or (DecodeSfcOutput $bom) -cne $sample) {throw 'SFC UTF16 decode failed'}
     if ((DecodeSfcOutput ([Text.Encoding]::UTF8.GetBytes($sample))) -cne $sample) {throw 'SFC UTF8 decode failed'}
     if ((Test-NexAdministrator) -isnot [bool]) {throw 'Privilege detection must return a Boolean'}
+    # Handoff acknowledgement does not launch a terminal or elevate the test runner.
+    $token=[guid]::NewGuid().ToString('N')
+    $pending=Get-NexHandoffPath $token pending
+    $ready=Get-NexHandoffPath $token ready
+    Complete-NexHandoff $token
+    if (Test-Path -LiteralPath $ready) {throw 'Handoff acknowledged without a pending request'}
+    [IO.File]::WriteAllText($pending,'wrong')
+    Complete-NexHandoff $token
+    if (Test-Path -LiteralPath $ready) {throw 'Incorrect token was accepted'}
+    [IO.File]::WriteAllText($pending,$token)
+    Complete-NexHandoff $token
+    if ([IO.File]::ReadAllText($ready) -cne $token) {throw 'Handoff acknowledgement missing'}
+    Complete-NexHandoff $token
+    if ([IO.File]::ReadAllText($ready) -cne $token) {throw 'Duplicate acknowledgement changed result'}
+    $rejected=$false
+    try {Get-NexHandoffPath '../invalid' ready} catch {$rejected=$true}
+    if (-not $rejected) {throw 'Invalid handoff path accepted'}
     $defaults=Get-NexPreferences -DefaultsOnly
     if ($defaults.LightMode -or $defaults.Theme -ne 'Pink') {throw 'Factory preferences are not default'}
     Write-Host 'Light theme and default preference checks passed.'
