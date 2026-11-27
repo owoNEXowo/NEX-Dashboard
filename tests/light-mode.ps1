@@ -64,6 +64,17 @@ try {
     $obj=ParseConfig ([IO.File]::ReadAllText($fixture))
     $native=@($obj.themes | Where-Object name -eq 'NEX Window')[0]
     if ($native.window.applicationTheme -ne 'dark' -or $obj.profiles.defaults.opacity -ne 50) {throw 'Native dark chrome not restored'}
+    # Exercise SFC decoding without running a real system scan.
+    $ast=(Get-Command Invoke-NexDiagnosticStep -CommandType Function).ScriptBlock.Ast
+    $decoder=$ast.Find({param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'DecodeSfcOutput'},$true)
+    if (-not $decoder) {throw 'SFC decoder missing'}
+    . ([scriptblock]::Create($decoder.Extent.Text))
+    $sample='Защита ресурсов Windows не обнаружила нарушений целостности.'
+    $utf16=[Text.Encoding]::Unicode.GetBytes($sample)
+    $bom=[byte[]](@(255,254)+$utf16)
+    if ((DecodeSfcOutput $utf16) -cne $sample -or (DecodeSfcOutput $bom) -cne $sample) {throw 'SFC UTF16 decode failed'}
+    if ((DecodeSfcOutput ([Text.Encoding]::UTF8.GetBytes($sample))) -cne $sample) {throw 'SFC UTF8 decode failed'}
+    if ((Test-NexAdministrator) -isnot [bool]) {throw 'Privilege detection must return a Boolean'}
     $defaults=Get-NexPreferences -DefaultsOnly
     if ($defaults.LightMode -or $defaults.Theme -ne 'Pink') {throw 'Factory preferences are not default'}
     Write-Host 'Light theme and default preference checks passed.'
