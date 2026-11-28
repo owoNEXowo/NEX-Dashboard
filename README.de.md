@@ -16,6 +16,12 @@
 
 </div>
 
+## Neuerungen in 2.7.1
+
+- Das Update-Center zeigt Downloadgröße, Live-Fortschritt und den SHA-256-Prüfstatus.
+
+[2.7.1](docs/release-notes/2.7.1.md)
+
 ## Neuerungen in 2.7.0
 
 - **Integrierter Terminal-Editor:** Tabs, Syntaxfarben, Suche mit Treffernavigation, Mausauswahl, Zwischenablage, Rückgängig/Wiederholen, automatische Klammerpaare und Einrückung, lokale Inline-Vervollständigung, Klammerhervorhebung und Zoom/Reset.
