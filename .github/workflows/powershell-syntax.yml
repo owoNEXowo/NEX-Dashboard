@@ -44,3 +44,10 @@ jobs:
       - name: Test Ookla consent persistence (7)
         shell: pwsh
         run: ./tests/ookla-consent.ps1
+
+      - name: Test light mode and default preferences (5.1)
+        shell: powershell
+        run: ./tests/light-mode.ps1
+      - name: Test light mode and default preferences (7)
+        shell: pwsh
+        run: ./tests/light-mode.ps1

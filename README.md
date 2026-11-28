@@ -4,7 +4,7 @@
 
 **Your terminal. Your style. Your control.**
 
-![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
+![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
 ![License: MIT](https://img.shields.io/badge/License-MIT-A6E3A1?style=for-the-badge)
@@ -15,6 +15,53 @@
 **English** · [Русский](README.ru.md) · [Deutsch](README.de.md)
 
 </div>
+
+## What's new in 2.7.0
+
+- **Built-in Terminal Editor:** Tabs, syntax colors, search with match navigation, mouse selection, clipboard, undo/redo, auto-pairs, auto-indent, local inline completion, matching brackets and zoom/reset.
+- **File Explorer:** Clickable breadcrumbs, extension-preserving rename with live preview, optional Windows “Open with” registration and the NEX icon.
+- **Benchmarks and storage:** Time-limited CPU, RAM and GPU workloads with selectable memory budgets and reports; read-only search for large files and folders.
+- **Personalization and monitoring:** Theme-derived light mode, favorites (F6), adaptive sidebar, compact layout, home blocks, draggable monitor cards, smoother indicators and new status widgets.
+- **Diagnostics and updates:** Read-only full PC scan, backed-up settings reset, F8 privilege switch through a replacement Terminal window, background release check and animated update feedback.
+
+Benchmarks are not a complete stability test. Available sensors and safe memory budgets depend on the hardware and drivers. Code completion is dictionary-based, not a full language server. Zoom and elevation depend on Windows Terminal; F8 uses Windows UAC and replaces the session, so save work first.
+
+[2.7.0 release notes](docs/release-notes/2.7.0.md) · [Website](https://owonexowo.github.io/NEX-Dashboard/)
+
+
+## 2.7.0 preview
+
+Screenshots from the final FIX14 test build; the public version has the same interface without the TEST label.
+
+| Benchmark Center | Pink light mode |
+| :---: | :---: |
+| ![Benchmark Center](benchmark-center.png) | ![Pink light mode](theme-light-pink.png) |
+
+<details>
+<summary>2.7.0 preview — Open file in editor tab</summary>
+
+### Large files and folders
+
+![Large files and folders](large-files.png)
+
+### Rename preview
+
+![Rename preview](rename-preview.png)
+
+### Inline code completion
+
+![Inline code completion](editor-completion.png)
+
+### Open file in editor tab
+
+![Open file in editor tab](editor-open-tab.png)
+
+### Midnight Aurora light mode
+
+![Midnight Aurora light mode](theme-light-aurora.png)
+
+</details>
+
 
 ## Preview
 
@@ -90,7 +137,7 @@
 
 A customizable Windows PowerShell dashboard with live hardware and network monitoring, 32 color options, custom Fastfetch layouts, Nerd Font icons, gaming and power management, an app launcher, file explorer, system diagnostics, Windows updates and configuration backup.
 
-## What's new in 2.6.2
+## Previous release: what's new in 2.6.2
 
 - Reorganized sidebar with optional group separators and grouped personalization settings.
 - Adaptive information labels and improved startup card resizing for supported consoles.
