@@ -16,6 +16,14 @@
 
 </div>
 
+## Neuerungen in 2.7.2
+
+Öffnen Sie **F1 → Hilfe und Feedback** oder suchen Sie mit Ctrl+K. Die Funktion ist auch im NEX Update-Center verfügbar. GitHub öffnet sich im Browser; Daten werden nicht automatisch gesendet.
+
+[Fehler melden](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=bug_report.md) · [Funktion vorschlagen](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=feature_request.md) · [Feedback geben](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=feedback.md)
+
+[2.7.2](docs/release-notes/2.7.2.md)
+
 ## Neuerungen in 2.7.1
 
 - Das Update-Center zeigt Downloadgröße, Live-Fortschritt und den SHA-256-Prüfstatus.

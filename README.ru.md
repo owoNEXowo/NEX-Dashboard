@@ -16,6 +16,14 @@
 
 </div>
 
+## Что нового в 2.7.2
+
+Откройте **F1 → Поддержка и отзывы** или найдите этот пункт через Ctrl+K. Он также доступен в центре обновлений NEX. GitHub открывается в браузере; данные автоматически не отправляются.
+
+[Сообщить об ошибке](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=bug_report.md) · [Предложить функцию](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=feature_request.md) · [Оставить отзыв](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=feedback.md)
+
+[2.7.2](docs/release-notes/2.7.2.md)
+
 ## Что нового в 2.7.1
 
 - Центр обновлений показывает размер установщика, прогресс загрузки и статус проверки SHA-256.

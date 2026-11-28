@@ -16,6 +16,14 @@
 
 </div>
 
+## What's new in 2.7.2
+
+Need help? Open **F1 → Support and feedback** or find it using Ctrl+K. You can also use the NEX Update Center. GitHub opens in your browser; no reports or personal data are sent automatically.
+
+[Report a bug](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=bug_report.md) · [Suggest a feature](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=feature_request.md) · [Share feedback](https://github.com/owoNEXowo/NEX-Dashboard/issues/new?template=feedback.md)
+
+[2.7.2](docs/release-notes/2.7.2.md)
+
 ## What's new in 2.7.1
 
 - Update Center now shows installer size, live download progress, and SHA-256 verification status.
