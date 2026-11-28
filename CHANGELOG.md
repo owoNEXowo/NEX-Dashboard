@@ -2,6 +2,11 @@
 
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
+## 2.7.2 — 2026-11-28
+
+- Support and feedback links in existing Help and Update Center, searchable with Ctrl+K.
+- GitHub issue templates for bugs, suggestions and feedback; no automatic reports.
+
 ## 2.7.1 — 2026-11-28
 
 - Update Center: installer size, real download progress and SHA-256 verification status.
