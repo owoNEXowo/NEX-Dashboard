@@ -1,0 +1,114 @@
+name: Publish NEX Dashboard 2.7.1
+'on':
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: nex-release-2-7-1
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PowerShell 5.1 and run regression tests
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          $path=Join-Path $env:GITHUB_WORKSPACE 'src/NexDashboard.ps1'
+          $bytes=[IO.File]::ReadAllBytes($path)
+          if ($bytes.Length -lt 3 -or $bytes[0] -ne 239 -or $bytes[1] -ne 187 -or $bytes[2] -ne 191) {throw 'UTF-8 BOM missing'}
+          $tokens=$null;$errors=$null
+          $null=[System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors)
+          if ($errors.Count) {throw ($errors | Out-String)}
+          if ([IO.File]::ReadAllText($path) -notmatch '\$global:NexPublicVersion=''2\.7\.1''') {throw 'Unexpected version'}
+          ./tests/fetch-layout.ps1
+          ./tests/ookla-consent.ps1
+          ./tests/light-mode.ps1
+      - name: Validate PowerShell 7 and run regression tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $tokens=$null;$errors=$null
+          $null=[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $env:GITHUB_WORKSPACE 'src/NexDashboard.ps1'),[ref]$tokens,[ref]$errors)
+          if ($errors.Count) {throw ($errors | Out-String)}
+          ./tests/fetch-layout.ps1
+          ./tests/ookla-consent.ps1
+          ./tests/light-mode.ps1
+  publish:
+    needs: verify
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package exact checked source and validate archive
+        shell: pwsh
+        run: |
+          $ErrorActionPreference='Stop'
+          $out=Join-Path $env:RUNNER_TEMP 'nex-release'
+          $stage=Join-Path $out 'stage'
+          $null=New-Item -ItemType Directory -Path $stage -Force
+          $ps1='NexDashboard-2.7.1-Public.ps1'
+          $zip='NexDashboard-2.7.1-EasyInstall.zip'
+          Copy-Item -LiteralPath 'src/NexDashboard.ps1' -Destination (Join-Path $out $ps1)
+          Copy-Item -LiteralPath (Join-Path $out $ps1) -Destination (Join-Path $stage $ps1)
+          $installer=[IO.File]::ReadAllText((Join-Path $env:GITHUB_WORKSPACE 'installer/Install.cmd'))
+          $old='%~dp0..\src\NexDashboard.ps1'
+          if (-not $installer.Contains($old)) {throw 'Unexpected installer layout'}
+          $installer=$installer.Replace($old,('%~dp0'+$ps1))
+          [IO.File]::WriteAllText((Join-Path $stage 'Install.cmd'),$installer,[Text.Encoding]::ASCII)
+          Copy-Item -LiteralPath 'LICENSE' -Destination (Join-Path $stage 'LICENSE')
+          Copy-Item -LiteralPath 'docs/release-notes/2.7.1.md' -Destination (Join-Path $stage 'README.txt')
+          Compress-Archive -Path (Join-Path $stage '*') -DestinationPath (Join-Path $out $zip) -CompressionLevel Optimal
+          $verify=Join-Path $out 'verify'
+          Expand-Archive -LiteralPath (Join-Path $out $zip) -DestinationPath $verify
+          foreach ($name in @('Install.cmd',$ps1,'LICENSE','README.txt')) {
+            if (-not (Test-Path -LiteralPath (Join-Path $verify $name) -PathType Leaf)) {throw "Missing file: $name"}
+          }
+          $original=(Get-FileHash -LiteralPath 'src/NexDashboard.ps1' -Algorithm SHA256).Hash
+          if ((Get-FileHash -LiteralPath (Join-Path $verify $ps1) -Algorithm SHA256).Hash -ne $original) {throw 'Packaged source mismatch'}
+          if ((Get-FileHash -LiteralPath (Join-Path $out $ps1) -Algorithm SHA256).Hash -ne $original) {throw 'Release source mismatch'}
+          $sums=@(foreach($name in @($zip,$ps1)) {
+            ((Get-FileHash -LiteralPath (Join-Path $out $name) -Algorithm SHA256).Hash.ToLowerInvariant()+'  '+$name)
+          })
+          [IO.File]::WriteAllLines((Join-Path $out 'SHA256SUMS.txt'),[string[]]$sums,[Text.Encoding]::ASCII)
+          Get-Content (Join-Path $out 'SHA256SUMS.txt')
+      - name: Create draft with verified assets and publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference='Stop'
+          $tag='v2.7.1'
+          $repo=$env:GITHUB_REPOSITORY
+          $out=Join-Path $env:RUNNER_TEMP 'nex-release'
+          $names=@('NexDashboard-2.7.1-EasyInstall.zip','NexDashboard-2.7.1-Public.ps1','SHA256SUMS.txt')
+          $existing=gh api "repos/$repo/releases" --paginate --jq '.[] | select(.tag_name == "v2.7.1") | .id'
+          if ($LASTEXITCODE -ne 0) {throw 'Could not check existing releases'}
+          if ($existing) {throw 'v2.7.1 already exists; inspect the existing release instead of overwriting it.'}
+          $assets=@(foreach($name in $names) {Join-Path $out $name})
+          gh release create $tag @assets --repo $repo --target $env:GITHUB_SHA --title 'NEX Dashboard 2.7.1' --notes-file 'docs/release-notes/2.7.1.md' --draft
+          if ($LASTEXITCODE -ne 0) {throw 'Draft release creation failed'}
+          $id=gh api "repos/$repo/releases" --paginate --jq '.[] | select(.tag_name == "v2.7.1") | .id'
+          if ($LASTEXITCODE -ne 0 -or -not $id) {throw 'Could not identify draft release'}
+          $valid=$false
+          for ($attempt=0;$attempt -lt 6;$attempt++) {
+            $json=gh api "repos/$repo/releases/$id"
+            if ($LASTEXITCODE -ne 0) {throw 'Could not inspect draft release'}
+            $release=$json | ConvertFrom-Json
+            if (-not $release.draft -or $release.assets.Count -ne $names.Count) {throw 'Unexpected draft release state'}
+            $valid=$true
+            foreach($name in $names) {
+              $asset=@($release.assets | Where-Object name -ceq $name)
+              $hash=(Get-FileHash -LiteralPath (Join-Path $out $name) -Algorithm SHA256).Hash.ToLowerInvariant()
+              if ($asset.Count -ne 1 -or $asset[0].digest -cne ('sha256:'+$hash)) {$valid=$false;break}
+            }
+            if ($valid) {break}
+            Start-Sleep -Seconds 5
+          }
+          if (-not $valid) {throw 'GitHub asset checksums did not match; the release remains a draft.'}
+          gh release edit $tag --repo $repo --draft=false --prerelease=false --latest
+          if ($LASTEXITCODE -ne 0) {throw 'Publishing failed; inspect the draft release.'}
