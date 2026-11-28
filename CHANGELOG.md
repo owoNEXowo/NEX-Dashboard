@@ -2,6 +2,10 @@
 
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
+## 2.7.1 — 2026-11-28
+
+- Update Center: installer size, real download progress and SHA-256 verification status.
+
 ## 2.7.0 — 2026-11-28
 
 - Sequential read-only PC diagnostics, with actionable findings and confirmed restart.

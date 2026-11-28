@@ -16,6 +16,12 @@
 
 </div>
 
+## What's new in 2.7.1
+
+- Update Center now shows installer size, live download progress, and SHA-256 verification status.
+
+[2.7.1](docs/release-notes/2.7.1.md)
+
 ## What's new in 2.7.0
 
 - **Built-in Terminal Editor:** Tabs, syntax colors, search with match navigation, mouse selection, clipboard, undo/redo, auto-pairs, auto-indent, local inline completion, matching brackets and zoom/reset.
