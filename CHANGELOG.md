@@ -2,6 +2,20 @@
 
 See [GitHub Releases](https://github.com/owoNEXowo/NEX-Dashboard/releases) for full release notes.
 
+## 2.7.0 — 2026-11-28
+
+- Sequential read-only PC diagnostics, with actionable findings and confirmed restart.
+- Theme-derived light appearance and a confirmed NEX preference reset with backup.
+- Disk Analyzer: large-file and folder search with a browsable location picker.
+- Benchmark Center: CPU, RAM and GPU tests, selectable memory budgets and reports; memory cleanup on completion or cancellation.
+- Dashboard personalization: favorites, adaptive sidebar, compact layout, home-card visibility and drag-and-drop feedback; additional status modules.
+- File Explorer: clickable path breadcrumbs, extension-preserving rename with preview, and optional Windows Open with registration with NEX editor icon.
+- Terminal Editor: syntax coloring, search, mouse selection, clipboard shortcuts, undo/redo, zoom indicator and reset, tabs, auto-pairing, indentation, inline completion and matching brackets.
+- NEX Update Center: background update check and animated availability/check feedback.
+- F8 privilege switching via a replacement Windows Terminal session; standard UAC remains required.
+- Improved editor input, wheel scrolling, Unicode rendering, memory cleanup and status refresh.
+- Release assets retain SHA-256 verification and the public installer marker.
+
 ## 2.6.2 — 2026-11-26
 
 - Reorganized sidebar with optional group separators and grouped personalization settings.

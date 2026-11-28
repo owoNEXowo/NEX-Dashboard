@@ -4,7 +4,7 @@
 
 **Dein Terminal. Dein Stil. Deine Kontrolle.**
 
-![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?include_prereleases&sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
+![Version](https://img.shields.io/github/v/release/owoNEXowo/NEX-Dashboard?sort=semver&label=Version&color=F5BDE6&style=for-the-badge)
 ![Windows](https://img.shields.io/badge/Windows-11-89B4FA?style=for-the-badge)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1-CBA6F7?style=for-the-badge)
 ![License: MIT](https://img.shields.io/badge/License-MIT-A6E3A1?style=for-the-badge)
@@ -15,6 +15,53 @@
 [English](README.md) · [Русский](README.ru.md) · **Deutsch**
 
 </div>
+
+## Neuerungen in 2.7.0
+
+- **Integrierter Terminal-Editor:** Tabs, Syntaxfarben, Suche mit Treffernavigation, Mausauswahl, Zwischenablage, Rückgängig/Wiederholen, automatische Klammerpaare und Einrückung, lokale Inline-Vervollständigung, Klammerhervorhebung und Zoom/Reset.
+- **Dateimanager:** Anklickbare Pfadsegmente, Umbenennung mit Dateiendung und Live-Vorschau sowie optionale Registrierung unter „Öffnen mit“ mit NEX-Symbol.
+- **Benchmarks und Laufwerke:** Zeitbegrenzte CPU-, RAM- und GPU-Tests mit wählbarem Speicherbudget und Berichten; schreibgeschützte Suche nach großen Dateien und Ordnern.
+- **Personalisierung und Monitoring:** Designbasierter Hellmodus, Favoriten (F6), adaptive Seitenleiste, Kompaktlayout, Startblöcke, verschiebbare Monitorkarten, sanftere Anzeigen und neue Status-Widgets.
+- **Diagnose und Updates:** Schreibgeschützte PC-Diagnose, Einstellungsreset mit Sicherung, F8-Berechtigungswechsel über ein Ersatz-Terminalfenster, Hintergrundprüfung und animierte Update-Anzeigen.
+
+Benchmarks ersetzen keinen vollständigen Stabilitätstest. Sensoren und sichere Speicherbudgets hängen von Hardware und Treibern ab. Die Vervollständigung basiert auf Wörterbüchern, nicht auf einem vollständigen Sprachserver. Zoom und Berechtigungswechsel hängen von Windows Terminal ab; F8 nutzt UAC und ersetzt die Sitzung, daher vorher speichern.
+
+[2.7.0 release notes](docs/release-notes/2.7.0.md) · [Website](https://owonexowo.github.io/NEX-Dashboard/)
+
+
+## Vorschau auf 2.7.0
+
+Screenshots des finalen FIX14-Testbuilds; die öffentliche Version hat dieselbe Oberfläche ohne TEST-Kennzeichnung.
+
+| Benchmark-Center | Pink im Hellmodus |
+| :---: | :---: |
+| ![Benchmark-Center](benchmark-center.png) | ![Pink im Hellmodus](theme-light-pink.png) |
+
+<details>
+<summary>Vorschau auf 2.7.0 — Datei in Editor-Tab öffnen</summary>
+
+### Große Dateien und Ordner
+
+![Große Dateien und Ordner](large-files.png)
+
+### Umbenennungsvorschau
+
+![Umbenennungsvorschau](rename-preview.png)
+
+### Inline-Codevervollständigung
+
+![Inline-Codevervollständigung](editor-completion.png)
+
+### Datei in Editor-Tab öffnen
+
+![Datei in Editor-Tab öffnen](editor-open-tab.png)
+
+### Midnight Aurora im Hellmodus
+
+![Midnight Aurora im Hellmodus](theme-light-aurora.png)
+
+</details>
+
 
 ## Vorschau
 
@@ -90,7 +137,7 @@
 
 Ein anpassbares Dashboard für Windows PowerShell mit Hardware- und Netzwerküberwachung, 32 Farboptionen, Fastfetch-Layouts, Nerd-Font-Symbolen, Gaming-Modus, Energiesparplanverwaltung, Anwendungsstarter, Dateimanager, Systemdiagnose, Windows-Updates und Konfigurationssicherung.
 
-## Neuerungen in 2.6.2
+## Vorherige Version: Neuerungen in 2.6.2
 
 - Neu geordnetes Seitenmenü mit optionalen Trennlinien und gruppierten Personalisierungseinstellungen.
 - Adaptive Beschriftungen und verbesserte Größenanpassung der Startkarten in unterstützten Konsolen.
